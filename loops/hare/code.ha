@@ -10,7 +10,7 @@ export fn main() void = {
 	let r = random::next(&rng) % 1000;
 	let a: [10000]int = [0...];
 	for(let i = 0; i < 10000; i+=1) {
-		for(let j = 0; j < 10000; j+=1) {
+		for(let j = 0; j < 100000; j+=1) {
 			a[i] = a[i] + j%u;
 		};
 		a[i] += r: int;
