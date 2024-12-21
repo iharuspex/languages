@@ -64,6 +64,12 @@ jobs:
         with:
           node-version: '22.11.0'
 
+      - name: Set up Ada
+        uses: ada-actions/toolchain@dev
+        with:
+          distrib: fsf
+          target: native
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.1.34'
