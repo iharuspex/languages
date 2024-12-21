@@ -65,10 +65,9 @@ jobs:
           node-version: '22.11.0'
 
       - name: Set up Ada
-        uses: ada-actions/toolchain@dev
+        uses: alire-project/setup-alire@v3
         with:
-          distrib: fsf
-          target: native
+          toolchain: 'gnat_native'
 
       - uses: oven-sh/setup-bun@v2
         with:
