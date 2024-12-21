@@ -3,12 +3,12 @@ package main
 import "core:fmt"
 import "core:os"
 import "core:strings"
-import "core:runtime"
+import "base:runtime"
 
 // Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm
 // Space Complexity: O(min(m,n)) - only uses two arrays instead of full matrix
 // Time Complexity: O(m*n) where m and n are the lengths of the input strings
-levenshtein_distance :: proc(s1, s2: string) -> int {
+levenshtein_distance :: proc(s1, s2: string) -> int #no_bounds_check {
     // Early termination checks
     if s1 == s2 do return 0
     if len(s1) == 0 do return len(s2)
@@ -24,11 +24,8 @@ levenshtein_distance :: proc(s1, s2: string) -> int {
     n := len(s2)
     
     // Use two arrays instead of full matrix for space optimization
-    prev_row := make([dynamic]int, m + 1)
-    curr_row := make([dynamic]int, m + 1)
-    defer delete(prev_row)
-    defer delete(curr_row)
-    
+    prev_row := make([]int, m + 1, context.temp_allocator)
+    curr_row := make([]int, m + 1, context.temp_allocator)
     // Initialize first row
     for i := 0; i <= m; i += 1 {
         prev_row[i] = i
@@ -53,9 +50,7 @@ levenshtein_distance :: proc(s1, s2: string) -> int {
         }
         
         // Swap rows
-        for i := 0; i <= m; i += 1 {
-            prev_row[i] = curr_row[i]
-        }
+        prev_row, curr_row = curr_row, prev_row
     }
     
     return prev_row[m]
