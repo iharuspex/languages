@@ -37,7 +37,7 @@ function run {
 }
 
 # run "Language" "Executable" "Command" "Arguments"
-#run "Ada" "./ada/code" "./ada/code" "${input}"
+run "Ada" "./ada/code" "./ada/code" "${input}"
 #run "AWK" "./awk/code.awk" "awk -f ./awk/code.awk" "${input}"
 #run "Babashka" "bb/code.clj" "bb bb/code.clj" "${input}"
 run "Bun (Compiled)" "./js/bun" "./js/bun" "${input}"
