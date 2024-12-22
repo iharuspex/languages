@@ -1,4 +1,4 @@
-///> using scala 3.6.2
+//> using scala 3.6.2
 
 /**
  * Calculates the Levenshtein distance between strings using Wagner-Fischer algorithm
