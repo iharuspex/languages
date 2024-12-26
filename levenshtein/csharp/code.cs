@@ -1,7 +1,5 @@
 using System.Runtime.CompilerServices;
 
-
-
 int min_distance = -1;
 int times = 0;
 for (int i = 0; i < args.Length; i++)
