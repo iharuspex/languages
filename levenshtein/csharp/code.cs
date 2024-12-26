@@ -1,4 +1,4 @@
-﻿int min_distance = -1;
+int min_distance = -1;
 int times = 0;
 for (int i = 0; i < args.Length; i++)
 {
@@ -18,46 +18,45 @@ for (int i = 0; i < args.Length; i++)
 Console.WriteLine($"times: {times}");
 Console.WriteLine($"min_distance: {min_distance}");
 
-static int levenshtein(ReadOnlySpan<char> str1t, ReadOnlySpan<char> str2t)
+static int levenshtein(ReadOnlySpan<char> str1, ReadOnlySpan<char> str2)
 {
     // Early termination checks
-    if (str1t.SequenceEqual(str2t))
+    if (str1.SequenceEqual(str2))
     {
         return 0;
     }
-    if (str1t.IsEmpty)
+    if (str1.IsEmpty)
     {
-        return str2t.Length;
+        return str2.Length;
     }
-    if (str2t.IsEmpty)
+    if (str2.IsEmpty)
     {
-        return str1t.Length;
+        return str1.Length;
     }
-    // Get lengths of both strings
-    int mt = str1t.Length;
-    int nt = str2t.Length;
-    // Assign shorter one to str1, longer one to str2
-    ReadOnlySpan<char> str1 = mt <= nt ? str1t : str2t;
-    ReadOnlySpan<char> str2 = mt <= nt ? str2t : str1t;
-    // store the lengths of shorter in m, longer in n
-    int m = str1 == str1t ? mt : nt;
-    int n = str1 == str1t ? nt : mt;
+
+    // Ensure str1 is the shorter string
+    if (str1.Length > str2.Length)
+    {
+        var strtemp = str2;
+        str2 = str1;
+        str1 = strtemp;
+    }
 
     // Create two rows, previous and current
-    Span<int> prev = stackalloc int[m + 1];
-    Span<int> curr = stackalloc int[m + 1];
+    Span<int> prev = stackalloc int[str1.Length + 1];
+    Span<int> curr = stackalloc int[str1.Length + 1];
 
     // initialize the previous row
-    for (int i = 0; i <= m; i++)
+    for (int i = 0; i < str1.Length; i++)
     {
         prev[i] = i;
     }
 
     // Iterate and compute distance
-    for (int i = 1; i <= n; i++)
+    for (int i = 1; i < str2.Length; i++)
     {
         curr[0] = i;
-        for (int j = 1; j <= m; j++)
+        for (int j = 1; j < str1.Length; j++)
         {
             int cost = (str1[j - 1] == str2[i - 1]) ? 0 : 1;
             curr[j] = Math.Min(
@@ -66,12 +65,13 @@ static int levenshtein(ReadOnlySpan<char> str1t, ReadOnlySpan<char> str2t)
               prev[j - 1] + cost)  // Substitution
             );
         }
-        for (int j = 0; j <= m; j++)
-        {
-            prev[j] = curr[j];
-        }
-    }
 
+        // Swap spans
+        var temp = prev;
+        prev = curr;
+        curr = temp;
+    }
+    
     // Return final distance, stored in prev[m]
-    return prev[m];
+    return prev[str1.Length];
 }
