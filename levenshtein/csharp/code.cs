@@ -47,16 +47,16 @@ static int levenshtein(ReadOnlySpan<char> str1, ReadOnlySpan<char> str2)
     Span<int> curr = stackalloc int[str1.Length + 1];
 
     // initialize the previous row
-    for (int i = 0; i < str1.Length; i++)
+    for (int i = 0; i <= str1.Length; i++)
     {
         prev[i] = i;
     }
 
     // Iterate and compute distance
-    for (int i = 1; i < str2.Length; i++)
+    for (int i = 1; i <= str2.Length; i++)
     {
         curr[0] = i;
-        for (int j = 1; j < str1.Length; j++)
+        for (int j = 1; j <= str1.Length; j++)
         {
             int cost = (str1[j - 1] == str2[i - 1]) ? 0 : 1;
             curr[j] = Math.Min(
