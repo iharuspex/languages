@@ -55,3 +55,6 @@ compile 'lean4' 'lake build --dir lean4 '
 # compile 'java' 'haxe --class-path haxe -main Code --jvm haxe/code.jar # was getting errors running `haxelib install hxjava`'
 # compile 'csharp' 'dotnet publish csharp -o csharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed'
 # compile 'ada' 'gnatmake -O3 -gnat2022 -gnatp -flto ada/code.adb -D ada -o ada/code'
+#Using `compile` for Emacs Lisp silently fails
+(cd emacs-lisp && emacs -Q --batch --eval '(byte-compile-file "code.el")')
+(cd emacs-lisp && emacs -Q --batch --eval '(native-compile "code.el" (expand-file-name "code.eln"))')

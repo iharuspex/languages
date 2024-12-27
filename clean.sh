@@ -38,3 +38,4 @@ rm -f chez/code.so
 rm -rf clojure/classes clojure/.cpcache
 rm -rf clojure-native-image/classes clojure-native-image/.cpcache clojure-native-image/code
 rm cobol/main
+rm emacs-lisp/code.eln emacs-lisp/code.elc
