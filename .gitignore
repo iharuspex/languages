@@ -16,3 +16,15 @@ dist/
 *.aux
 *.bbl
 *.blg
+jvm.code
+code.jar
+code.elc
+code.eln
+Cargo.lock
+**/csharp/bin/
+**/csharp/obj/
+**/fsharp/bin/
+**/fsharp/obj/
+**/cobol/main
+**/js/bun
+*.iprof
