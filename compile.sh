@@ -12,7 +12,8 @@ function compile {
 
 compile 'c' 'clang -O3 c/code.c -o c/code'
 compile 'cpp' 'clang++ -std=c++23 -march=native -O3 -Ofast -o cpp/code cpp/code.cpp'
-compile 'go' 'go build -ldflags "-s -w" -o go/code go/code.go'
+#compile 'go' 'go build -ldflags "-s -w" -o go/code go/code.go'
+go build -ldflags "-s -w" -o go/code go/code.go
 compile 'jvm' 'javac jvm/code.java'
 compile 'js' 'bun build --bytecode --compile js/code.js --outfile js/bun'
 compile 'jvm' 'native-image -O3 jvm.code'
@@ -21,7 +22,7 @@ compile 'rust' 'cargo build --manifest-path rust/Cargo.toml --release'
 compile 'kotlin' 'kotlinc -include-runtime kotlin/code.kt -d kotlin/code.jar'
 compile 'kotlin' 'kotlinc-native kotlin/code.kt -o kotlin/code -opt'
 compile 'dart' 'dart compile exe dart/code.dart -o dart/code --target-os=macos'
-compile 'inko' 'cd inko && inko build --opt=aggressive code.inko -o code && cd ..'
+compile 'inko' '(cd inko && inko build --opt=aggressive code.inko -o code)'
 compile 'nim' 'nim c -d:danger --opt:speed -d:passC -x:off -a:off nim/code.nim'
 compile 'nim' 'nim -d:release --threads:off --stackTrace:off --lineTrace:off --opt:speed -x:off -o:nim/code c nim/code.nim'
 compile 'sbcl' 'sbcl --noinform --non-interactive --load "common-lisp/code.lisp" --build'
