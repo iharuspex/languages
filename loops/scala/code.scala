@@ -1,5 +1,8 @@
-///> using scala 3.6.2
+//> using scala 3.6.2
 //> using file base.scala
 
-@main
-def main(number: String): Unit = Loop.run(number)
+object Main {
+  def main(args: Array[String]): Unit = {
+    Loop.run(args)
+  }
+}
