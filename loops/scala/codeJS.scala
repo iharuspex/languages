@@ -13,6 +13,6 @@ object NodeProcess extends js.Object {
 object MainJS {
   def main(args: Array[String]): Unit = {
     val params = NodeProcess.argv.drop(2).toArray
-    Loop.run(params(0))
+    Loop.run(params)
   }
 }
