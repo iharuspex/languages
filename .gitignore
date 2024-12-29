@@ -28,3 +28,7 @@ Cargo.lock
 **/cobol/main
 **/js/bun
 *.iprof
+.scala-build
+*/scala/code-native
+*/scala/code.js
+levenshtein.mod
