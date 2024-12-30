@@ -43,6 +43,7 @@ function run {
 run "Bun (Compiled)" "./js/bun" "./js/bun" "${input}"
 run "Bun (jitless)" "./js/code.js" "bun ./js/code.js" "BUN_JSC_useJIT=0" "${input}"
 run "Bun" "./js/code.js" "bun ./js/code.js" "${input}"
+run "C3" "./c3/code" "./c3/code" "${input}"
 run "C" "./c/code" "./c/code" "${input}"
 run "C#" "./csharp/code" "./csharp/code" "${input}"
 #run "C# AOT" "./csharp/code-aot/code" "./csharp/code-aot/code" "${input}"
