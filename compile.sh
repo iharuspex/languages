@@ -47,7 +47,8 @@ compile 'haskell' 'ghc -O2 -fllvm haskell/code.hs -o haskell/code || { echo "ghc
 compile 'v' 'v -prod -cc clang -cflags -march=native -d no_backtrace -o v/code v/code.v'
 compile 'emojicode' 'emojicodec emojicode/code.emojic'
 compile 'chez' "echo '(compile-program \"chez/code.ss\")' | chez --optimize-level 3 -q"
-compile 'clojure' "(cd clojure && mkdir -p classes && clojure -Sdeps '{:paths [\".\"]}' -M -e \"(compile 'code)\")"
+#compile 'clojure' "(cd clojure && mkdir -p classes && clojure -Sdeps '{:paths [\".\"]}' -M -e \"(compile 'code)\")"
+(cd clojure && mkdir -p classes && clojure -Sdeps '{:paths ["."]}' -M -e "(compile 'code)")
 #compile 'clojure-native-image' "(cd clojure-native-image && clojure -M:native-image)"
 #Using `compile` for clojure-native-image silently fails
 (cd clojure-native-image && clojure -M:native-image --pgo-instrument -march=native && ./code "$(cat input.txt)" && clojure -M:native-image --pgo -march=native)
