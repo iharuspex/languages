@@ -3,18 +3,24 @@
 
 (set! *unchecked-math* :warn-on-boxed)
 
-(defn- fibonacci ^long [^long n]
-  ((fn fib ^long [^long n]
+(definterface IFib
+  (^long fib [^long n]))
+
+(deftype Fibonacci []
+  IFib
+  (fib [_ n]
     (if (<= n 1)
       n
-      (+ (long (fib (- n 1)))
-         (long (fib (- n 2)))))) n))
+      (+ (.fib _ (- n 1))
+         (.fib _ (- n 2))))))
+
+(def ^:private ^Fibonacci fibonacci (Fibonacci.))
 
 (defn -main [& args]
   (let [u (long (parse-long (first args)))
         r (loop [i 1
                  sum 0]
             (if (< i u)
-              (recur (inc i) (+ sum (long (fibonacci i))))
+              (recur (inc i) (+ sum (long (.fib fibonacci i))))
               sum))]
     (println r)))
