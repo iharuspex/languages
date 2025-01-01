@@ -8,11 +8,12 @@
 
 (deftype Fibonacci []
   IFib
-  (fib [_ n]
-    (if (<= n 1)
-      n
-      (+ (.fib _ (- n 1))
-         (.fib _ (- n 2))))))
+  (fib [_  n]
+    (if (or (zero? n)
+            (== 1 n))
+      (long n)
+      (long (+ (.fib _ (- n 1))
+               (.fib _ (- n 2)))))))
 
 (def ^:private ^Fibonacci fibonacci (Fibonacci.))
 
