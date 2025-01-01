@@ -50,7 +50,7 @@ compile 'chez' "echo '(compile-program \"chez/code.ss\")' | chez --optimize-leve
 compile 'clojure' "(cd clojure && mkdir -p classes && clojure -Sdeps '{:paths [\".\"]}' -M -e \"(compile 'code)\")"
 #compile 'clojure-native-image' "(cd clojure-native-image && clojure -M:native-image)"
 #Using `compile` for clojure-native-image silently fails
-(cd clojure-native-image && clojure -M:native-image)
+(cd clojure-native-image && clojure -M:native-image --pgo-instrument -march=native && ./code "$(cat ../input.txt)" && clojure -M:native-image --pgo -march=native)
 compile 'cobol' 'cobc -I /opt/homebrew/include/ -O -O2 -O3 -Os -x -o cobol/main cobol/main.cbl'
 compile 'lean4' 'lake build --dir lean4 '
 # compile 'fsharp' 'dotnet publish fsharp -o fsharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed'
