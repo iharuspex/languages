@@ -17,7 +17,8 @@ compile 'cpp' 'clang++ -std=c++23 -march=native -O3 -Ofast -o cpp/code cpp/code.
 go build -ldflags "-s -w" -o go/code go/code.go
 compile 'jvm' 'javac jvm/code.java'
 compile 'js' 'bun build --bytecode --compile js/code.js --outfile js/bun'
-compile 'jvm' 'native-image -O3 jvm.code'
+# The compile function can't cope with the java-native-image compile
+(cd java-native-image && native-image -cp .. -O3 --pgo-instrument -march=native jvm.code  && ./jvm.code $(cat input.txt) && native-image -cp .. -O3 --pgo -march=native jvm.code -o code)
 compile 'rust' 'RUSTFLAGS="-Zlocation-detail=none" cargo +nightly build --manifest-path rust/Cargo.toml --release'
 compile 'rust' 'cargo build --manifest-path rust/Cargo.toml --release'
 compile 'kotlin' 'kotlinc -include-runtime kotlin/code.kt -d kotlin/code.jar'
