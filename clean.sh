@@ -2,7 +2,10 @@ rm c3/code
 rm c/code
 rm cpp/code
 rm go/code
-rm jvm/code.class
+rm jvm/*.class
+rm java-native-image/code
+rm java-native-image/jvm.code
+rm java-native-image/default.iprof
 rm scala/code scala/code-native
 rm -r rust/target
 rm -rf kotlin/code.jar
