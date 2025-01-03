@@ -43,7 +43,9 @@ compile 'zig' 'zig build-exe -O ReleaseFast -femit-bin=zig/code zig/code.zig'
 compile 'lua' 'luajit -b lua/code.lua lua/code'
 compile 'swift' 'swiftc -O -parse-as-library -Xcc -funroll-loops -Xcc -march=native -Xcc -ftree-vectorize -Xcc -ffast-math swift/code.swift -o swift/code'
 compile 'csharp' 'dotnet publish csharp -o csharp/code'
+compile 'csharp' 'dotnet publish csharp -o csharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed'
 compile 'fsharp' 'dotnet publish fsharp -o fsharp/code'
+compile 'fsharp' 'dotnet publish fsharp -o fsharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed'
 compile 'haskell' 'ghc -O2 -fllvm haskell/code.hs -o haskell/code || { echo "ghc: cannot compile with llvm backend; fallback to use default backend"; ghc -O2 haskell/code.hs -o haskell/code; }'
 compile 'v' 'v -prod -cc clang -cflags -march=native -d no_backtrace -o v/code v/code.v'
 compile 'emojicode' 'emojicodec emojicode/code.emojic'
@@ -55,9 +57,7 @@ compile 'chez' "echo '(compile-program \"chez/code.ss\")' | chez --optimize-leve
 (cd clojure-native-image && clojure -M:native-image --pgo-instrument -march=native && ./code $(cat input.txt) && clojure -M:native-image --pgo -march=native)
 compile 'cobol' 'cobc -I /opt/homebrew/include/ -O -O2 -O3 -Os -x -o cobol/main cobol/main.cbl'
 compile 'lean4' 'lake build --dir lean4 '
-# compile 'fsharp' 'dotnet publish fsharp -o fsharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed'
 # compile 'java' 'haxe --class-path haxe -main Code --jvm haxe/code.jar # was getting errors running `haxelib install hxjava`'
-# compile 'csharp' 'dotnet publish csharp -o csharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed'
 # compile 'ada' 'gnatmake -O3 -gnat2022 -gnatp -flto ada/code.adb -D ada -o ada/code'
 #Using `compile` for Emacs Lisp silently fails
 (cd emacs-lisp && emacs -Q --batch --eval '(byte-compile-file "code.el")')
