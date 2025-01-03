@@ -63,6 +63,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.11.0'
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
 
       - uses: oven-sh/setup-bun@v2
         with:
