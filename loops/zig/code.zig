@@ -10,11 +10,10 @@ pub fn main() !void {
     const u = try std.fmt.parseInt(usize, arg, 10);
 
     // Get a random number 0 <= r < 10k
-    const r = rand.intRangeAtMost(usize, 0, 10000);
+    const r = rand.intRangeAtMostBiased(usize, 0, 10000);
 
     // Array of 10k elements initialized to 0
-    var a: [10000]usize = undefined;
-    @memset(&a, 0);
+    var a: [10000]usize = [_]usize{0} ** 10000;
 
     // 10k outer loop iterations
     for (0..10000) |i| {
