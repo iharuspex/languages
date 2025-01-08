@@ -13,8 +13,8 @@ func levenshteinDistance(_ s1: String, _ s2: String) -> Int {
     let (str1, str2) = s1.count > s2.count ? (s2, s1) : (s1, s2)
 
     // Convert strings to arrays for O(1) access
-    let arr1 = Array(str1)
-    let arr2 = Array(str2)
+    let arr1 = str1.utf8CString.dropLast()
+    let arr2 = str2.utf8CString.dropLast()
     
     let m = arr1.count
     let n = arr2.count
