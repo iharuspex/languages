@@ -26,38 +26,34 @@ fn levenshteinDistance(s1: []const u8, s2: []const u8) usize {
     }
 
     // Main computation loop
-    var j: usize = 1;
-    while (j <= n) : (j += 1) {
+
+    for (1..(n + 1)) |j| {
         curr_row[0] = j;
 
-        var i: usize = 1;
-        while (i <= m) : (i += 1) {
+        for (1..(m + 1)) |i| {
             const cost: usize = if (str1[i - 1] == str2[j - 1]) 0 else 1;
-            
+
             // Calculate minimum of three operations
-            curr_row[i] = @min(
-                @min(
-                    prev_row[i] + 1,      // deletion
-                    curr_row[i - 1] + 1,  // insertion
-                ),
-                prev_row[i - 1] + cost    // substitution
+            curr_row[i] = @min(@min(
+                prev_row[i] + 1, // deletion
+                curr_row[i - 1] + 1, // insertion
+            ), prev_row[i - 1] + cost // substitution
             );
         }
 
         // Swap rows
-        @memcpy(prev_row[0..m + 1], curr_row[0..m + 1]);
+        @memcpy(prev_row[0 .. m + 1], curr_row[0 .. m + 1]);
     }
 
     return prev_row[m];
 }
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
 
     const args = try std.process.argsAlloc(allocator);
-    defer std.process.argsFree(allocator, args);
 
     if (args.len < 3) {
         const stderr = std.io.getStdErr().writer();
@@ -69,10 +65,9 @@ pub fn main() !void {
     var times: usize = 0;
 
     // Compare all pairs of strings
-    var i: usize = 1;
-    while (i < args.len) : (i += 1) {
-        var j: usize = 1;
-        while (j < args.len) : (j += 1) {
+
+    for (1..args.len) |i| {
+        for (1..args.len) |j| {
             if (i != j) {
                 const distance = levenshteinDistance(args[i], args[j]);
                 if (min_distance == -1 or distance < @as(usize, @intCast(min_distance))) {
