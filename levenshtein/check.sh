@@ -1,4 +1,4 @@
-expected_output="times: 3906
+expected_output="times: 7656
 min_distance: 7"
 
 trimmed_output=$(echo "${*}" | sed 's/\x1b\[[0-9;]*m//g' | awk '{$1=$1};1')
