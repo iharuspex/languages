@@ -90,8 +90,8 @@ program main
     implicit none
     
     integer :: num_args, i, j, distance, min_distance, times
-    character(len=100), allocatable :: args(:)
-    character(len=100) :: arg
+    character(len=300), allocatable :: args(:)
+    character(len=300) :: arg
     
     ! Get command line arguments
     num_args = command_argument_count()
