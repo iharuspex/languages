@@ -90,8 +90,8 @@ program main
     implicit none
     
     integer :: num_args, i, j, distance, min_distance, times
-    character(len=300), allocatable :: args(:)
-    character(len=300) :: arg
+    integer :: max_len, arg_len
+    character(len=:), allocatable :: args(:)
     
     ! Get command line arguments
     num_args = command_argument_count()
@@ -101,13 +101,19 @@ program main
         stop 1
     end if
     
-    ! Allocate array for arguments
-    allocate(args(num_args))
-    
-    ! Read command line arguments
+    ! Get max length of arguments
+    max_len = 0
     do i = 1, num_args
-        call get_command_argument(i, arg)
-        args(i) = trim(arg)
+        call get_command_argument(i, length=arg_len)
+        max_len = max(max_len, arg_len)
+    end do
+
+    ! Single allocation of args array
+    allocate(character(len=max_len) :: args(num_args))
+    
+    ! Read command line arguments directly into allocated array
+    do i = 1, num_args
+        call get_command_argument(i, args(i))
     end do
     
     min_distance = -1
