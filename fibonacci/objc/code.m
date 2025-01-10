@@ -12,5 +12,5 @@ int main(int argc, const char * argv[]) {
   for (int i = 1; i < u; i++) {
     r += fibonacci(i);
   }
-  NSLog(@"%d\n", r);
+  printf("%d\n", r);
 }
