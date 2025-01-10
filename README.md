@@ -71,3 +71,6 @@ More will likely be added in the future, as this repository improves:
 - https://benjdd.com/languages
 - https://benjdd.com/languages2
 - https://benjdd.com/languages3
+- https://pez.github.io/languages-visualizations/ 
+  - check https://github.com/PEZ/languages-visualizations/tags for tags, which correspond to a snapshot of some particular benchmark run: e.g:
+  - https://pez.github.io/languages-visualizations/v2024.12.31/
