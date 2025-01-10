@@ -16,10 +16,8 @@ pub fn main() !void {
     const u = try std.fmt.parseInt(usize, arg, 10);
 
     var r: u64 = 0;
-    if (u > 0) {
-        for (1..u) |i| {
-            r += fib(i);
-        }
+    for (1..u) |i| {
+        r += fib(i);
     }
     try stdout.print("{d}\n", .{r});
 }
