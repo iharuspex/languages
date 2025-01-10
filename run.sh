@@ -36,6 +36,7 @@ function run {
   fi
 }
 
+run "Hare" "./hare/code 40"
 # run "Language" "Executable" "Command" "Arguments"
 #run "Ada" "./ada/code" "./ada/code" "${input}"
 #run "AWK" "./awk/code.awk" "awk -f ./awk/code.awk" "${input}"

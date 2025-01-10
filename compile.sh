@@ -15,6 +15,7 @@ compile 'c' 'gcc -O3 c/code.c -o c/code'
 compile 'cpp' 'g++ -std=c++23 -march=native -O3 -Ofast -o cpp/code cpp/code.cpp'
 #compile 'go' 'go build -ldflags "-s -w" -o go/code go/code.go'
 go build -ldflags "-s -w" -o go/code go/code.go
+hare build -R -o hare/code hare/code.ha
 compile 'jvm' 'javac jvm/code.java'
 compile 'js' 'bun build --bytecode --compile js/code.js --outfile js/bun'
 # The compile function can't cope with the java-native-image compile
