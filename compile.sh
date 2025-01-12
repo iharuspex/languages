@@ -64,3 +64,4 @@ compile 'lean4' 'lake build --dir lean4 '
 (cd emacs-lisp && emacs -Q --batch --eval '(byte-compile-file "code.el")')
 (cd emacs-lisp && emacs -Q --batch --eval '(native-compile "code.el" (expand-file-name "code.eln"))')
 (cd racket && raco make code.rkt && raco demod -o code.zo code.rkt && raco exe -o code code.zo)
+pip3.13 install numba --break-system-packages

@@ -67,7 +67,7 @@ run "Fortran" "./fortran/code" "./fortran/code" "${input}"
 run "Free Pascal" "./fpc/code" "./fpc/code" "${input}"
 run "Go" "./go/code" "./go/code" "${input}"
 run "Haskell" "./haskell/code" "./haskell/code" "${input}"
-#run "Haxe JVM" "haxe/code.jar" "java -jar haxe/code.jar" "${input}" # was getting errors running `haxelib install hxjava` 
+#run "Haxe JVM" "haxe/code.jar" "java -jar haxe/code.jar" "${input}" # was getting errors running `haxelib install hxjava`
 run "Inko" "./inko/code" "./inko/code" "${input}"
 run "Java" "./jvm/code.class" "java jvm.code" "${input}"
 run "Java Native" "./java-native-image/code" "./java-native-image/code" "${input}"
@@ -88,6 +88,7 @@ run "PHP JIT" "./php/code.php" "php -dopcache.enable_cli=1 -dopcache.jit=on -dop
 run "PHP" "./php/code.php" "php ./php/code.php" "${input}"
 run "PyPy" "./py/code.py" "pypy ./py/code.py" "${input}"
 run "Python" "./py/code.py" "python3.13 ./py/code.py" "${input}"
+run "Python JIT" "./py-jit/code.py" "python3.13 ./py-jit/code.py" "${input}"
 #run "R" "./r/code.R" "Rscript ./r/code.R" "${input}"
 run "Racket" "./racket/code" "./racket/code" "$input"
 run "Ruby YJIT" "./ruby/code.rb" "miniruby --yjit ./ruby/code.rb" "${input}"
