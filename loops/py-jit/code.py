@@ -1,9 +1,9 @@
 import sys
 import random
-from numba import jit, int32
+from numba import njit, int32
 
 
-@jit
+@njit
 def main(u: int32):
     # Get an input number from the command line
     r = random.randint(0, 10000)  # Get a random number 0 <= r < 10k
