@@ -13,8 +13,8 @@ fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> u32 {
     let m = s1_bytes.len();
 
     // Use two rows instead of full matrix for space optimization
-    let mut prev_row = vec![0u32; m + 1];
-    let mut curr_row = vec![0u32; m + 1];
+    let mut prev_row: Vec<u32> = (0..=m).map(|b| b as u32).collect();
+    let mut curr_row: Vec<u32> = vec![0; m + 1];
 
     // Main computation loop
     for (j, s2) in s2_bytes.iter().copied().enumerate() {
