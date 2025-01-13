@@ -21,17 +21,13 @@ fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> u32 {
     for j in 1..=n {
         curr_row[0] = j as u32;
 
-        for i in 1..=m {
-            let cost = if s1_bytes[i - 1] == s2_bytes[j - 1] {
-                0
-            } else {
-                1
-            };
+        for (i, s1) in s1_bytes.iter().copied().enumerate() {
+            let cost = if s1 == s2_bytes[j - 1] { 0 } else { 1 };
 
             // Calculate minimum of three operations
-            curr_row[i] = (prev_row[i] + 1) // deletion
-                .min(curr_row[i - 1] + 1) // insertion
-                .min(prev_row[i - 1] + cost); // substitution
+            curr_row[i + 1] = (prev_row[i + 1] + 1) // deletion
+                .min(curr_row[i] + 1) // insertion
+                .min(prev_row[i] + cost); // substitution
         }
 
         // Swap rows
