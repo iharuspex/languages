@@ -29,13 +29,9 @@ fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> usize {
             };
 
             // Calculate minimum of three operations
-            curr_row[i] = std::cmp::min(
-                std::cmp::min(
-                    prev_row[i] + 1,     // deletion
-                    curr_row[i - 1] + 1, // insertion
-                ),
-                prev_row[i - 1] + cost, // substitution
-            );
+            curr_row[i] = (prev_row[i] + 1) // deletion
+                .min(curr_row[i - 1] + 1) // insertion
+                .min(prev_row[i - 1] + cost); // substitution
         }
 
         // Swap rows
