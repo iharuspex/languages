@@ -11,18 +11,17 @@ fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> u32 {
     };
 
     let m = s1_bytes.len();
-    let n = s2_bytes.len();
 
     // Use two rows instead of full matrix for space optimization
     let mut prev_row = vec![0u32; m + 1];
     let mut curr_row = vec![0u32; m + 1];
 
     // Main computation loop
-    for j in 1..=n {
-        curr_row[0] = j as u32;
+    for (j, s2) in s2_bytes.iter().copied().enumerate() {
+        curr_row[0] = (j + 1) as u32;
 
         for (i, s1) in s1_bytes.iter().copied().enumerate() {
-            let cost = if s1 == s2_bytes[j - 1] { 0 } else { 1 };
+            let cost = if s1 == s2 { 0 } else { 1 };
 
             // Calculate minimum of three operations
             curr_row[i + 1] = (prev_row[i + 1] + 1) // deletion
