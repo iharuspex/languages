@@ -17,10 +17,10 @@ fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> u32 {
     let mut curr_row: Vec<u32> = vec![0; m + 1];
 
     // Main computation loop
-    for (j, s2) in s2_bytes.iter().copied().enumerate() {
+    for (j, s2) in s2_bytes.iter().enumerate() {
         curr_row[0] = (j + 1) as u32;
 
-        for (i, s1) in s1_bytes.iter().copied().enumerate() {
+        for (i, s1) in s1_bytes.iter().enumerate() {
             let cost = if s1 == s2 { 0 } else { 1 };
 
             // Calculate minimum of three operations
