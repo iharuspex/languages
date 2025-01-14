@@ -3,7 +3,7 @@ use std::env;
 /// Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm
 /// Space Complexity: O(min(m,n)) - only uses two rows instead of full matrix
 /// Time Complexity: O(m*n) where m and n are the lengths of the input strings
-fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> usize {
+fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> u32 {
     let (s1_bytes, s2_bytes) = if s1.len() > s2.len() {
         (s2, s1)
     } else {
@@ -13,12 +13,12 @@ fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> usize {
     let m = s1_bytes.len();
 
     // Use two rows instead of full matrix for space optimization
-    let mut prev_row: Vec<usize> = (0..m + 1).collect();
-    let mut curr_row: Vec<usize> = vec![0; m + 1];
+    let mut prev_row: Vec<u32> = (0..m + 1).map(|b| b as u32).collect();
+    let mut curr_row: Vec<u32> = vec![0; m + 1];
 
     // Main computation loop
     for (j, s2) in s2_bytes.iter().enumerate() {
-        curr_row[0] = j + 1;
+        curr_row[0] = (j + 1) as u32;
 
         for (i, s1) in s1_bytes.iter().enumerate() {
             let cost = if s1 == s2 { 0 } else { 1 };
@@ -65,5 +65,5 @@ fn main() {
     }
 
     println!("times: {}", times);
-    println!("min_distance: {}", min_distance.unwrap_or(usize::MAX));
+    println!("min_distance: {}", min_distance.unwrap_or(u32::MAX));
 }
