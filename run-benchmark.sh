@@ -26,8 +26,6 @@ if [ -n "${input_value}" ]; then
     cmd_input="${input_value}"
 fi
 
-echo "run_ms:" "${run_ms}"
-
 function check {
   if [ ${skip_check} = false ]; then
     echo "Checking $1"
@@ -40,8 +38,15 @@ function check {
   fi
 }
 
+benchmark_dir="/tmp/languages-benchmark"
+mkdir -p "${benchmark_dir}"
+timestamp=$(date +%Y%m%d_%H%M%S)
+results_file="${benchmark_dir}/results_${timestamp}.txt"
+echo "Running $(basename ${PWD}) benchmarks"
+echo "Results will be written to: ${results_file}"
+
 function run {
-  echo ""
+  echo
   if [ -f "${2}" ]; then
     check "${1}" "${3}" 1 "${cmd_input}"
     if [ ${?} -eq 0 ] && [ ${check_only} = false ]; then
@@ -49,7 +54,7 @@ function run {
       cmd="${3} ${run_ms} ${cmd_input}"
       echo "${cmd}"
       output=$(eval "${cmd}")
-      echo "${1};${output}"
+      echo "${1};${output}" | tee -a "${results_file}"
     fi
   else
     echo "No executable or script found for ${1}. Skipping."
@@ -57,4 +62,9 @@ function run {
 }
 
 run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
+run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
+
+echo
+echo "Done running $(basename ${PWD}) benchmarks"
+echo "Results were written to: ${results_file}"
