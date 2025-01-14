@@ -11,5 +11,5 @@ function compile {
 }
 
 compile 'clojure' '(cd clojure && mkdir -p classes && clojure -M -e "(compile (quote run))")'
-# (cd clojure-native-image && clojure -M:native-image --pgo-instrument -march=native && ./code $(cat input.txt) && clojure -M:native-image --pgo -march=native)
+compile 'clojure-native-image' "(cd clojure-native-image && clojure -M:native-image-run --pgo-instrument -march=native  && ./run 10000 36 && clojure -M:native-image-run --pgo -march=native)"
 
