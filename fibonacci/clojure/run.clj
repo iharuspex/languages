@@ -31,7 +31,7 @@
         n (parse-long (second args))
         _ (benchmark/run run-ms #(fib-sum n))
         [result count mean-time] (benchmark/run run-ms #(fib-sum n))]
-    (println (str count ";" (double mean-time) ";" result))))
+    (println (str (double mean-time) ";" count ";" result))))
 
 (comment
   (-main "10000" "36")
