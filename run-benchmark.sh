@@ -5,23 +5,26 @@
 # With arguments the check will be skipped, unless the only argument is "check"
 # The special argument "check" makes the input always input.txt, and skips the benchmark
 
-input_value="$1"
-shift
-
 check_only=false
 skip_check=false
 run_ms=10000
 cmd_input="$(./check-output.sh -i)"
+user="J Doe"
 
-while getopts "cst:" opt; do
+while getopts "cst:u:" opt; do
   case $opt in
     c) check_only=true ;;
     s) skip_check=true ;;
     t) run_ms="${OPTARG}" ;;
+    u) user="${OPTARG}" ;;
     *) ;;
   esac
 done
+shift $((OPTIND-1))
 
+user=${user//;/_}
+
+input_value="$1"
 if [ -n "${input_value}" ]; then
     cmd_input="${input_value}"
 fi
@@ -38,12 +41,30 @@ function check {
   fi
 }
 
+benchmark=$(basename ${PWD})
+commit_sha=$(git rev-parse --short HEAD)
 benchmark_dir="/tmp/languages-benchmark"
+os=${OSTYPE//;/_}
+arch=$(uname -m)
+
+if [[ "${os}" == "darwin"* ]]; then
+    model=$(sysctl -n machdep.cpu.brand_string)
+elif [[ "${os}" == "linux-gnu"* ]]; then
+    model=$(lscpu | grep "Model name" | awk -F: '{print $2}' | sed -e 's/^[[:space:]]*//')
+elif [[ "${os}" == "freebsd"* ]]; then
+    model=$(sysctl -n machdep.cpu.brand_string)
+else
+    model="Unknown"
+fi
+
+model=${model//;/_}
+
 mkdir -p "${benchmark_dir}"
-timestamp=$(date +%Y%m%d_%H%M%S)
-results_file="${benchmark_dir}/results_${timestamp}.txt"
-echo "Running $(basename ${PWD}) benchmarks"
+results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}.txt"
+echo "benchmark;commit_sha;user;model;os;arch;language;run_ms;mean_run_ms;times" > "${results_file}"
+echo "Running ${benchmark} benchmarks"
 echo "Results will be written to: ${results_file}"
+
 
 function run {
   echo
@@ -54,14 +75,15 @@ function run {
       cmd="${3} ${run_ms} ${cmd_input}"
       echo "${cmd}"
       output=$(eval "${cmd}")
-      echo "${1};${output}" | tee -a "${results_file}"
+      # keep only the first two items from the output string
+      result=$(echo "${output}" | awk -F ';' '{print $1";"$2}')
+      echo "${benchmark};${commit_sha};${user};${model};${os};${arch};${1};${run_ms};${result}" | tee -a "${results_file}"
     fi
   else
     echo "No executable or script found for ${1}. Skipping."
   fi
 }
 
-run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
 
