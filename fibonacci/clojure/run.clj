@@ -29,8 +29,8 @@
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
         n (parse-long (second args))
-        _ (benchmark/run run-ms #(fib-sum n))]
-    (-> (benchmark/run run-ms #(fib-sum n))
+        _ (benchmark/run #(fib-sum n) run-ms)]
+    (-> (benchmark/run #(fib-sum n) run-ms)
         benchmark/format-results 
         println)))
 

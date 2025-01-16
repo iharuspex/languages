@@ -20,8 +20,8 @@
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
         u (parse-long (second args))
-        _ (benchmark/run run-ms #(loops u))]
-    (-> (benchmark/run run-ms #(loops u))
+        _ (benchmark/run #(loops u) run-ms)]
+    (-> (benchmark/run #(loops u) run-ms)
         benchmark/format-results
         println)))
 

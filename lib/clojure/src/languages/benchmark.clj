@@ -26,7 +26,7 @@
    Returns a map with stats and result.
    NB: If `f` takes sub-milliseconds to run, this function can run for very long
        because of the overhead of looping so many times."
-  [^long run-ms f]
+  [f ^long run-ms]
   (let [run-ns (* 1000000 run-ms)
         runs (loop [results []
                     last-tet 0]
@@ -49,7 +49,7 @@
   (str (double mean-ms) "," (double std-dev-ms) "," (double min-ms) "," (double max-ms) "," runs "," result))
 
 (comment
-  (-> (run 1000 #(reduce + (range 1000000)))
+  (-> (run #(reduce + (range 1000000)) 1000)
       format-results)
   :rcf)
 

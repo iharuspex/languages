@@ -48,8 +48,8 @@
         input-path (second args)
         strings (-> (slurp input-path)
                     (string/split #"\s+"))
-        _warmup (benchmark/run run-ms #(levenshtein-distances strings))
-        results (benchmark/run run-ms #(levenshtein-distances strings))]
+        _warmup (benchmark/run #(levenshtein-distances strings) run-ms)
+        results (benchmark/run #(levenshtein-distances strings) run-ms)]
     (-> results
         (update :result (partial reduce +))
         benchmark/format-results
