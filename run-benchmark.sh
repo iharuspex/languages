@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# We run the benchmark with input from `check-output.sh -i` as argument
-# unless the script is run with arguments, then those will be used instead
-# With arguments the check will be skipped, unless the only argument is "check"
-# The special argument "check" makes the input always input.txt, and skips the benchmark
-
+# Defaults
 check_only=false
 skip_check=false
 run_ms=10000
@@ -13,33 +9,19 @@ user="J Doe"
 
 while getopts "cst:u:" opt; do
   case $opt in
-    c) check_only=true ;;
-    s) skip_check=true ;;
-    t) run_ms="${OPTARG}" ;;
-    u) user="${OPTARG}" ;;
+    u) user="${OPTARG}" ;;   # Included in result file
+    t) run_ms="${OPTARG}" ;; # How long should the benchmark run?
+    c) check_only=true ;;    # Skip benchmark
+    s) skip_check=true ;;    # Run benchmark even if check fails (typically with non-default input)
     *) ;;
   esac
 done
 shift $((OPTIND-1))
-
 user=${user//;/_}
-
-input_value="$1"
+input_value="${1}"
 if [ -n "${input_value}" ]; then
     cmd_input="${input_value}"
 fi
-
-function check {
-  if [ ${skip_check} = false ]; then
-    echo "Checking $1"
-    echo "${2} ${3} ${4}"
-    output=$(${2} ${3} ${4})
-    if ! ./check-output.sh "$output"; then
-      echo "Check failed for $1."
-      return 1
-    fi
-  fi
-}
 
 benchmark=$(basename ${PWD})
 commit_sha=$(git rev-parse --short HEAD)
@@ -56,37 +38,61 @@ elif [[ "${os}" == "freebsd"* ]]; then
 else
     model="Unknown"
 fi
-
 model=${model//;/_}
 
 mkdir -p "${benchmark_dir}"
 results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}.txt"
+# Data header, should match what is printed from `run`
 echo "benchmark;commit_sha;user;model;os;arch;language;run_ms;mean_run_ms;times" > "${results_file}"
-echo "Running ${benchmark} benchmarks"
+
+echo "Running ${benchmark} benchmark..."
 echo "Results will be written to: ${results_file}"
 
+function check {
+  local language_name=${1}
+  local partial_command=${2}
+  local run_time_ms=${3}
+  local input_arg=${4}
+  if [ ${skip_check} = false ]; then
+    echo "Checking ${benchmark} ${language_name}"
+    echo "${partial_command} ${run_time_ms} ${input_arg}"
+    local program_output=$(${partial_command} "${run_time_ms}" "${input_arg}")
+    if ! ./check-output.sh "${program_output}"; then
+      echo "Check failed for ${benchmark} ${language_name}."
+      return 1
+    fi
+  fi
+}
 
 function run {
+  # "Language" "File that should exist" "Partial command line"
+  local language_name=${1}
+  local file_that_should_exist=${2}
+  local partial_command=${3}
   echo
-  if [ -f "${2}" ]; then
-    check "${1}" "${3}" 1 "${cmd_input}"
+  if [ -f "${file_that_should_exist}" ]; then
+    check "${language_name}" "${partial_command}" 1 "${cmd_input}"
     if [ ${?} -eq 0 ] && [ ${check_only} = false ]; then
-      echo "Benchmarking $1"
-      cmd="${3} ${run_ms} ${cmd_input}"
-      echo "${cmd}"
-      output=$(eval "${cmd}")
+      echo "Benchmarking ${benchmark} ${language_name}"
+      local command_line="${partial_command} ${run_ms} ${cmd_input}"
+      echo "${command_line}"
+      local program_output=$(eval "${command_line}")
       # keep only the first two items from the output string
-      result=$(echo "${output}" | awk -F ';' '{print $1";"$2}')
-      echo "${benchmark};${commit_sha};${user};${model};${os};${arch};${1};${run_ms};${result}" | tee -a "${results_file}"
+      result=$(echo "${program_output}" | awk -F ';' '{print $1";"$2}')
+      echo "${benchmark};${commit_sha};${user};${model};${os};${arch};${language_name};${run_ms};${result}" | tee -a "${results_file}"
     fi
   else
     echo "No executable or script found for ${1}. Skipping."
   fi
 }
 
+# Please keep in language name alphabetic order
+# run "Language name" "File that should exist" "Command line"
+####### BEGIN The languages
 run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
+####### END The languages
 
 echo
-echo "Done running $(basename ${PWD}) benchmarks"
+echo "Done running $(basename ${PWD}) benchmark"
 echo "Results were written to: ${results_file}"
