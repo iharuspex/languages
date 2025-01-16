@@ -6,17 +6,24 @@ skip_check=false
 run_ms=10000
 cmd_input="$(./check-output.sh -i)"
 user="J Doe"
+only_langs=false
 
-while getopts "cst:u:" opt; do
+while getopts "cst:u:l:" opt; do
   case $opt in
-    u) user="${OPTARG}" ;;   # Included in result file
-    t) run_ms="${OPTARG}" ;; # How long should the benchmark run?
-    c) check_only=true ;;    # Skip benchmark
-    s) skip_check=true ;;    # Run benchmark even if check fails (typically with non-default input)
+    u) user="${OPTARG}" ;;       # Included in result file
+    t) run_ms="${OPTARG}" ;;     # How long should the benchmark run?
+    c) check_only=true ;;        # Skip benchmark
+    s) skip_check=true ;;        # Run benchmark even if check fails (typically with non-default input)
+    l) only_langs="${OPTARG}" ;; # Languages to benchmark (string separated by `:`)
     *) ;;
   esac
 done
 shift $((OPTIND-1))
+
+if [ -n "${only_langs}" ]; then
+  IFS=':' read -r -a only_langs <<< "${only_langs}"
+fi
+
 is_checked=true
 if [ "$skip_check" = true ]; then
   is_checked=false
@@ -80,6 +87,20 @@ function run {
   local language_name=${1}
   local file_that_should_exist=${2}
   local partial_command=${3}
+
+  if [ "$only_langs" != false ]; then
+    local should_run=false
+    for lang in "${only_langs[@]}"; do
+      if [ "$lang" = "$language_name" ]; then
+        should_run=true
+        break
+      fi
+    done
+    if [ "$should_run" = false ]; then
+      return
+    fi
+  fi
+
   echo
   if [ -f "${file_that_should_exist}" ]; then
     check "${language_name}" "${partial_command}" 1 "${cmd_input}"
