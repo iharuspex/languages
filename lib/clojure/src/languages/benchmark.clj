@@ -4,18 +4,18 @@
   "Returns stats in ms for input in ns"
   [total-elapsed-time elapsed-times]
   (let [runs (count elapsed-times)
-        mean (/ total-elapsed-time runs)
-        min (reduce min elapsed-times)
-        max (reduce max elapsed-times)
+        mean-ns (/ total-elapsed-time runs)
+        min-ns (reduce min elapsed-times)
+        max-ns (reduce max elapsed-times)
         variance (/ (reduce + (map (fn [t]
-                                     (Math/pow (- t mean) 2))
+                                     (Math/pow (- t mean-ns) 2))
                                    elapsed-times))
                     runs)
-        std-dev (Math/sqrt variance)]
-    {:mean (/ mean 1000000)
-     :min (/ min 1000000)
-     :max (/ max 1000000)
-     :std-dev (/ std-dev 1000000)}))
+        std-dev-ns (Math/sqrt variance)]
+    {:mean-ms (/ mean-ns 1000000)
+     :min-ms (/ min-ns 1000000)
+     :max-ms (/ max-ns 1000000)
+     :std-dev-ms (/ std-dev-ns 1000000)}))
 
 ; Avoid introducing more overhead than necessary in the loop below
 (set! *unchecked-math* :warn-on-boxed) 

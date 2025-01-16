@@ -18,7 +18,7 @@ if [ "$echo_input" = true ]; then
   exit 0
 fi
 
-result=$(echo "$1" | sed 's/\x1b\[[0-9;]*m//g' | awk -F ';' '{print $3}')
+result=$(echo "$1" | sed 's/\x1b\[[0-9;]*m//g' | awk -F ';' '{print $6}')
 
 if [ "$result" -ge "$expected_min" ] && [ "$result" -le "$expected_max" ]; then
   echo "Check passed"

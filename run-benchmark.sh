@@ -54,10 +54,10 @@ fi
 model=${model//;/_}
 
 mkdir -p "${benchmark_dir}"
-results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.txt"
+results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
 # Data header, should match what is printed from `run`
 if [ "${check_only}" = false ]; then
-  echo "benchmark;commit_sha;is_checked;user;model;os;arch;language;run_ms;mean_run_ms;times" > "${results_file}"
+  echo "benchmark;commit_sha;is_checked;user;model;os;arch;language;run_ms;mean_ms;std-dev-ms;min_ms;max_ms;times" > "${results_file}"
   echo "Running ${benchmark} benchmark..."
   echo "Results will be written to: ${results_file}"
 else
@@ -111,8 +111,7 @@ function run {
       local command_line="${partial_command} ${run_ms} ${cmd_input}"
       echo "${command_line}"
       local program_output=$(eval "${command_line}")
-      # keep only the first two items from the output string
-      result=$(echo "${program_output}" | awk -F ';' '{print $1";"$2}')
+      result=$(echo "${program_output}" | awk -F ';' '{print $1";"$2";"$3";"$4";"$5}')
       echo "${benchmark};${commit_sha};${is_checked};${user};${model};${os};${arch};${language_name};${run_ms};${result}" | tee -a "${results_file}"
     fi
   else

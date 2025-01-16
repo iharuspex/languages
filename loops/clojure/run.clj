@@ -21,8 +21,8 @@
   (let [run-ms (parse-long (first args))
         u (parse-long (second args))
         _ (benchmark/run run-ms #(loops u))
-        [result count mean-time] (benchmark/run run-ms #(loops u))]
-    (println (str (double mean-time) ";" count ";" result))))
+        {:keys [mean-ms std-dev-ms min-ms max-ms runs result]} (benchmark/run run-ms #(loops u))]
+          (println (str mean-ms ";" std-dev-ms ";" min-ms ";" max-ms ";" runs ";" result))))
 
 (comment
   (-main "1" "40")
