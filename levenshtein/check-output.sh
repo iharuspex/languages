@@ -16,7 +16,7 @@ if [ "$echo_input" = true ]; then
   exit 0
 fi
 
-result=$(echo "$1" | sed 's/\x1b\[[0-9;]*m//g' | awk -F ';' '{print $6}')
+result=$(echo "$1" | sed 's/\x1b\[[0-9;]*m//g' | awk -F ',' '{print $6}')
 
 if [ "${result}" == "${expected_result}" ]; then
   echo "Check passed"
