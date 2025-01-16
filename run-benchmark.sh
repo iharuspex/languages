@@ -17,6 +17,10 @@ while getopts "cst:u:" opt; do
   esac
 done
 shift $((OPTIND-1))
+is_checked=true
+if [ "$skip_check" = true ]; then
+  is_checked=false
+fi
 user=${user//;/_}
 input_value="${1}"
 if [ -n "${input_value}" ]; then
@@ -43,10 +47,15 @@ model=${model//;/_}
 mkdir -p "${benchmark_dir}"
 results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}.txt"
 # Data header, should match what is printed from `run`
-echo "benchmark;commit_sha;user;model;os;arch;language;run_ms;mean_run_ms;times" > "${results_file}"
+if [ "${check_only}" = false ]; then
+  echo "benchmark;commit_sha;is_checked;user;model;os;arch;language;run_ms;mean_run_ms;times" > "${results_file}"
+  echo "Running ${benchmark} benchmark..."
+  echo "Results will be written to: ${results_file}"
+else
+  echo "Only checking ${benchmark} benchmark"
+  echo "No benchmark will be run"
+fi
 
-echo "Running ${benchmark} benchmark..."
-echo "Results will be written to: ${results_file}"
 
 function check {
   local language_name=${1}
@@ -61,6 +70,8 @@ function check {
       echo "Check failed for ${benchmark} ${language_name}."
       return 1
     fi
+  else
+    echo "Skipping check for ${benchmark} ${language_name}"
   fi
 }
 
@@ -79,10 +90,10 @@ function run {
       local program_output=$(eval "${command_line}")
       # keep only the first two items from the output string
       result=$(echo "${program_output}" | awk -F ';' '{print $1";"$2}')
-      echo "${benchmark};${commit_sha};${user};${model};${os};${arch};${language_name};${run_ms};${result}" | tee -a "${results_file}"
+      echo "${benchmark};${commit_sha};${is_checked};${user};${model};${os};${arch};${language_name};${run_ms};${result}" | tee -a "${results_file}"
     fi
   else
-    echo "No executable or script found for ${1}. Skipping."
+    echo "No executable or script found for ${language_name}. Skipping."
   fi
 }
 
