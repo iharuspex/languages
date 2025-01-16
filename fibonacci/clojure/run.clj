@@ -29,9 +29,10 @@
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
         n (parse-long (second args))
-        _ (benchmark/run run-ms #(fib-sum n))
-        {:keys [mean-ms std-dev-ms min-ms max-ms runs result]} (benchmark/run run-ms #(fib-sum n))]
-    (println (str mean-ms ";" std-dev-ms ";" min-ms ";" max-ms ";" runs ";" result))))
+        _ (benchmark/run run-ms #(fib-sum n))]
+    (-> (benchmark/run run-ms #(fib-sum n))
+        benchmark/format-results 
+        println)))
 
 (comment
   (-main "10000" "36")

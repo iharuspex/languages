@@ -43,9 +43,13 @@
         elapsed-times (map second runs)]
     (merge {:runs (count runs)
             :result result}
-           (update-vals (stats total-elapsed-time elapsed-times) double))))
+           (stats total-elapsed-time elapsed-times))))
+
+(defn format-results [{:keys [mean-ms std-dev-ms min-ms max-ms runs result]}]
+  (str (double mean-ms) ";" (double std-dev-ms) ";" (double min-ms) ";" (double max-ms) ";" runs ";" result))
 
 (comment
-  (run 1000 #(reduce + (range 1000000)))
+  (-> (run 1000 #(reduce + (range 1000000)))
+      format-results)
   :rcf)
 

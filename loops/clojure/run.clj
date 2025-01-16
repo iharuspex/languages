@@ -20,9 +20,10 @@
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
         u (parse-long (second args))
-        _ (benchmark/run run-ms #(loops u))
-        {:keys [mean-ms std-dev-ms min-ms max-ms runs result]} (benchmark/run run-ms #(loops u))]
-          (println (str mean-ms ";" std-dev-ms ";" min-ms ";" max-ms ";" runs ";" result))))
+        _ (benchmark/run run-ms #(loops u))]
+    (-> (benchmark/run run-ms #(loops u))
+        benchmark/format-results
+        println)))
 
 (comment
   (-main "1" "40")
