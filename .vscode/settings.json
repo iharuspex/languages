@@ -2,5 +2,6 @@
     "rust-analyzer.linkedProjects": [
         "levenshtein/rust/Cargo.toml",
         "levenshtein/rust/code.rs"
-    ]
+    ],
+    "files.trimTrailingWhitespace": false
 }
