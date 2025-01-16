@@ -34,3 +34,4 @@ Cargo.lock
 levenshtein.mod
 */racket/compiled/
 *.zo
+*/clojure-native-image/run
