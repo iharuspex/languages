@@ -11,5 +11,5 @@ function compile {
 }
 
 compile 'clojure' '(cd clojure && mkdir -p classes && clojure -M -e "(compile (quote run))")'
-compile 'clojure-native-image' "(cd clojure-native-image ; clojure -M:native-image-run --pgo-instrument -march=native) ; ./clojure-native-image/run 10000 $(./check-output.sh -i) && (cd clojure-native-image ; clojure -M:native-image-run --pgo -march=native)"
+compile 'clojure-native-image' "(cd clojure-native-image ; clojure -M:native-image-run --pgo-instrument -march=native) ; ./clojure-native-image/run -XX:ProfilesDumpFile=clojure-native-image/run.iprof 10000 $(./check-output.sh -i) && (cd clojure-native-image ; clojure -M:native-image-run --pgo=run.iprof -march=native)"
 

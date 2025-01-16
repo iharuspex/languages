@@ -1,5 +1,7 @@
 #!/bin/bash
 
+benchmark=$(basename "${PWD}")
+
 # Defaults
 check_only=false
 skip_check=false
@@ -7,14 +9,16 @@ run_ms=10000
 cmd_input="$(./check-output.sh -i)"
 user="J Doe"
 only_langs=false
+use_hyperfine=false
+[[ "$benchmark" == "hello-world" ]] && use_hyperfine=true
 
-while getopts "cst:u:l:" opt; do
+while getopts "cst:u:l:h" opt; do
   case $opt in
-    u) user="${OPTARG}" ;;       # Included in result file
-    t) run_ms="${OPTARG}" ;;     # How long should the benchmark run?
-    c) check_only=true ;;        # Skip benchmark
-    s) skip_check=true ;;        # Run benchmark even if check fails (typically with non-default input)
-    l) only_langs="${OPTARG}" ;; # Languages to benchmark (string separated by `:`)
+    u) user="${OPTARG}" ;;          # Included in result file
+    t) run_ms="${OPTARG}" ;;        # How long should the benchmark run?
+    c) check_only=true ;;           # Skip benchmark
+    s) skip_check=true ;;           # Run benchmark even if check fails (typically with non-default input)
+    l) only_langs="${OPTARG}" ;;    # Languages to benchmark (string separated by `:`)
     *) ;;
   esac
 done
@@ -36,7 +40,6 @@ if [ -n "${input_value}" ]; then
     cmd_input="${input_value}"
 fi
 
-benchmark=$(basename ${PWD})
 commit_sha=$(git rev-parse --short HEAD)
 benchmark_dir="/tmp/languages-benchmark"
 os=${OSTYPE//;/_}
@@ -54,8 +57,9 @@ fi
 model=${model//;/_}
 
 mkdir -p "${benchmark_dir}"
-results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
-# Data header, should match what is printed from `run`
+results_file_name="${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
+results_file="${benchmark_dir}/${results_file_name}"
+# Data header, must match what is printed from `run`
 if [ "${check_only}" = false ]; then
   echo "benchmark;commit_sha;is_checked;user;model;os;arch;language;run_ms;mean_ms;std-dev-ms;min_ms;max_ms;times" > "${results_file}"
   echo "Running ${benchmark} benchmark..."
@@ -69,12 +73,15 @@ fi
 function check {
   local language_name=${1}
   local partial_command=${2}
-  local run_time_ms=${3}
-  local input_arg=${4}
+  local input_arg=${3}
+
+  local command_line
+  local program_output
+
   if [ ${skip_check} = false ]; then
     echo "Checking ${benchmark} ${language_name}"
-    echo "${partial_command} ${run_time_ms} ${input_arg}"
-    local program_output=$(${partial_command} "${run_time_ms}" "${input_arg}")
+    command_line="${partial_command} 1 ${input_arg}"
+    program_output=$(${command_line})
     if ! ./check-output.sh "${program_output}"; then
       echo "Check failed for ${benchmark} ${language_name}."
       return 1
@@ -90,6 +97,7 @@ function run {
   local file_that_should_exist=${2}
   local partial_command=${3}
 
+
   if [ "$only_langs" != false ]; then
     local should_run=false
     for lang in "${only_langs[@]}"; do
@@ -103,15 +111,24 @@ function run {
     fi
   fi
 
+  local result
   echo
   if [ -f "${file_that_should_exist}" ]; then
-    check "${language_name}" "${partial_command}" 1 "${cmd_input}"
+    check "${language_name}" "${partial_command}" "${cmd_input}"
     if [ ${?} -eq 0 ] && [ ${check_only} = false ]; then
       echo "Benchmarking ${benchmark} ${language_name}"
-      local command_line="${partial_command} ${run_ms} ${cmd_input}"
-      echo "${command_line}"
-      local program_output=$(eval "${command_line}")
-      result=$(echo "${program_output}" | awk -F ';' '{print $1";"$2";"$3";"$4";"$5}')
+      if [ ${use_hyperfine} = true ]; then
+        local command_line="${partial_command} 1 ${cmd_input}"
+        mkdir -p "${benchmark_dir}/hyperfine"
+        hyperfine_file="${benchmark_dir}/hyperfine/${results_file_name}"
+        hyperfine -i --shell=none --output=pipe --runs 25 --warmup 5 --export-csv "${hyperfine_file}" "${command_line}"
+        result=$(tail -n +2 "${hyperfine_file}" | awk -F ',' '{print ($2*1000)";"($3*1000)";"($7*1000)";"($8*1000)";"25}')
+      else
+        local command_line="${partial_command} ${run_ms} ${cmd_input}"
+        echo "${command_line}"
+        local program_output=$(eval "${command_line}")
+        result=$(echo "${program_output}" | awk -F ';' '{print $1";"$2";"$3";"$4";"$5}')
+      fi
       echo "${benchmark};${commit_sha};${is_checked};${user};${model};${os};${arch};${language_name};${run_ms};${result}" | tee -a "${results_file}"
     fi
   else
