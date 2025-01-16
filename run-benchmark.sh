@@ -20,8 +20,10 @@ while getopts "cst:u:l:" opt; do
 done
 shift $((OPTIND-1))
 
-if [ -n "${only_langs}" ]; then
-  IFS=':' read -r -a only_langs <<< "${only_langs}"
+only_langs_slug=""
+if [ -n "${only_langs}" ] && [ "${only_langs}" != "false" ]; then
+    IFS=':' read -r -a only_langs <<< "${only_langs}"
+    only_langs_slug="_only_langs"
 fi
 
 is_checked=true
@@ -52,7 +54,7 @@ fi
 model=${model//;/_}
 
 mkdir -p "${benchmark_dir}"
-results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}.txt"
+results_file="${benchmark_dir}/${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.txt"
 # Data header, should match what is printed from `run`
 if [ "${check_only}" = false ]; then
   echo "benchmark;commit_sha;is_checked;user;model;os;arch;language;run_ms;mean_run_ms;times" > "${results_file}"
