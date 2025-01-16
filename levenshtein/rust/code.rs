@@ -3,55 +3,30 @@ use std::env;
 /// Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm
 /// Space Complexity: O(min(m,n)) - only uses two rows instead of full matrix
 /// Time Complexity: O(m*n) where m and n are the lengths of the input strings
-fn levenshtein_distance(s1: &str, s2: &str) -> usize {
-    // Early termination checks
-    if s1 == s2 {
-        return 0;
-    }
-    if s1.is_empty() {
-        return s2.len();
-    }
-    if s2.is_empty() {
-        return s1.len();
-    }
-
-    // Convert to bytes for faster access
-    let s1_bytes = s1.as_bytes();
-    let s2_bytes = s2.as_bytes();
-
-    // Make s1 the shorter string for space optimization
-    let (s1_bytes, s2_bytes) = if s1_bytes.len() > s2_bytes.len() {
-        (s2_bytes, s1_bytes)
+fn levenshtein_distance(s1: &[u8], s2: &[u8]) -> u32 {
+    let (s1_bytes, s2_bytes) = if s1.len() > s2.len() {
+        (s2, s1)
     } else {
-        (s1_bytes, s2_bytes)
+        (s1, s2)
     };
 
     let m = s1_bytes.len();
-    let n = s2_bytes.len();
 
     // Use two rows instead of full matrix for space optimization
-    let mut prev_row = Vec::with_capacity(m + 1);
-    let mut curr_row = Vec::with_capacity(m + 1);
-
-    // Initialize first row
-    prev_row.extend(0..=m);
-    curr_row.resize(m + 1, 0);
+    let mut prev_row: Vec<u32> = (0..m + 1).map(|b| b as u32).collect();
+    let mut curr_row: Vec<u32> = vec![0; m + 1];
 
     // Main computation loop
-    for j in 1..=n {
-        curr_row[0] = j;
+    for (j, s2) in s2_bytes.iter().enumerate() {
+        curr_row[0] = (j + 1) as u32;
 
-        for i in 1..=m {
-            let cost = if s1_bytes[i - 1] == s2_bytes[j - 1] { 0 } else { 1 };
-            
+        for (i, s1) in s1_bytes.iter().enumerate() {
+            let cost = if s1 == s2 { 0 } else { 1 };
+
             // Calculate minimum of three operations
-            curr_row[i] = std::cmp::min(
-                std::cmp::min(
-                    prev_row[i] + 1,      // deletion
-                    curr_row[i - 1] + 1,  // insertion
-                ),
-                prev_row[i - 1] + cost    // substitution
-            );
+            curr_row[i + 1] = (prev_row[i + 1] + 1) // deletion
+                .min(curr_row[i] + 1) // insertion
+                .min(prev_row[i] + cost); // substitution
         }
 
         // Swap rows
@@ -65,30 +40,34 @@ fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
 
     if args.len() < 2 {
-        println!("Please provide at least two strings as arguments.");
+        eprintln!("Please provide at least two strings as arguments.");
         return;
     }
 
-    let mut min_distance = None;
+    if !args.iter().all(|s| s.is_ascii()) {
+        eprintln!("This benchmark assumes ASCII string values.");
+        return;
+    }
+
+    if args.iter().any(|s| s.is_empty()) {
+        eprintln!("This benchmark assumes non-empty strings.");
+        return;
+    }
+
+    let mut min_distance = u32::MAX;
     let mut times = 0;
 
     // Compare all pairs of strings
-    for i in 0..args.len() {
-        for j in 0..args.len() {
+    for (i, s1) in args.iter().enumerate() {
+        for (j, s2) in args.iter().enumerate() {
             if i != j {
-                let distance = levenshtein_distance(&args[i], &args[j]);
-                if let Some(current_min) = min_distance {
-                    if distance < current_min {
-                        min_distance = Some(distance);
-                    }
-                } else {
-                    min_distance = Some(distance);
-                }
+                let distance = levenshtein_distance(s1.as_bytes(), s2.as_bytes());
+                min_distance = min_distance.min(distance);
                 times += 1;
             }
         }
     }
 
-    println!("times: {}", times);
-    println!("min_distance: {}", min_distance.unwrap_or(usize::MAX));
+    println!("times: {times}");
+    println!("min_distance: {min_distance}");
 }

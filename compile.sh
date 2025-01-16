@@ -2,10 +2,10 @@ function compile {
   if [ -d ${1} ]; then
     echo ""
     echo "Compiling $1"
-    ${2} 2> /dev/null
+    ${2} 2>/dev/null
     result=$?
     if [ $result -ne 0 ]; then
-        echo "Failed to compile ${1} with command: ${2}"
+      echo "Failed to compile ${1} with command: ${2}"
     fi
   fi
 }
@@ -19,8 +19,7 @@ hare build -R -o hare/code hare/code.ha
 compile 'jvm' 'javac jvm/code.java'
 compile 'js' 'bun build --bytecode --compile js/code.js --outfile js/bun'
 # The compile function can't cope with the java-native-image compile
-(cd java-native-image && native-image -cp .. -O3 --pgo-instrument -march=native jvm.code  && ./jvm.code $(cat input.txt) && native-image -cp .. -O3 --pgo -march=native jvm.code -o code)
-compile 'rust' 'RUSTFLAGS="-Zlocation-detail=none" cargo +nightly build --manifest-path rust/Cargo.toml --release'
+(cd java-native-image && native-image -cp .. -O3 --pgo-instrument -march=native jvm.code && ./jvm.code $(cat input.txt) && native-image -cp .. -O3 --pgo -march=native jvm.code -o code)
 compile 'rust' 'cargo build --manifest-path rust/Cargo.toml --release'
 compile 'kotlin' 'kotlinc -include-runtime kotlin/code.kt -d kotlin/code.jar'
 compile 'kotlin' 'kotlinc-native kotlin/code.kt -o kotlin/code -opt'
