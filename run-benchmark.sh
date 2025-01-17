@@ -141,6 +141,7 @@ function run {
 ####### BEGIN The languages
 run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
+run "Java" "./jvm/run.class" "java -cp .:../lib/java jvm.run"
 ####### END The languages
 
 echo
