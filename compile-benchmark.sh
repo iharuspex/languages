@@ -16,4 +16,5 @@ function compile {
 compile 'Clojure' 'clojure' '(cd clojure && mkdir -p classes && clojure -M -e "(compile (quote run))")'
 compile 'Clojure Native' 'clojure-native-image' "(cd clojure-native-image ; clojure -M:native-image-run --pgo-instrument -march=native) ; ./clojure-native-image/run -XX:ProfilesDumpFile=clojure-native-image/run.iprof 10000 $(./check-output.sh -i) && (cd clojure-native-image ; clojure -M:native-image-run --pgo=run.iprof -march=native)"
 compile 'Java' 'jvm' 'javac -cp ../lib/java jvm/run.java'
+compile 'Java Native' 'java-native-image' "(cd java-native-image ; native-image -cp ..:../../lib/java --no-fallback -O3 --pgo-instrument -march=native jvm.run) && ./java-native-image/jvm.run -XX:ProfilesDumpFile=java-native-image/run.iprof 10000 $(./check-output.sh -i) && (cd java-native-image ; native-image -cp ..:../../lib/java -O3 --pgo=run.iprof -march=native jvm.run -o run)"
 ####### END The languages
