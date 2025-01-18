@@ -1,6 +1,5 @@
-#include <iostream>
+#include <print>
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+auto main() -> int {
+    std::println("Hello, World!");
 }
