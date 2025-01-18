@@ -55,17 +55,17 @@ To add a language:
 
 You are also welcome to add new top-level benchmarks dirs
 
-# Available Benchmarks
+## Available Benchmarks
 
-### [hello-world](./hello-world/README.md)
+#### [hello-world](./hello-world/README.md)
 
-### [loops](./loops/README.md)
+#### [loops](./loops/README.md)
 
-### [fibonacci](./fibonacci/README.md)
+#### [fibonacci](./fibonacci/README.md)
 
-### [levenshtein](./levenshtein/README.md)
+#### [levenshtein](./levenshtein/README.md)
 
-# Corresponding visuals
+## Corresponding visuals
 
 Several visuals have been published based on the work here.
 More will likely be added in the future, as this repository improves:
@@ -77,24 +77,25 @@ More will likely be added in the future, as this repository improves:
   - check https://github.com/PEZ/languages-visualizations/tags for tags, which correspond to a snapshot of some particular benchmark run: e.g:
   - https://pez.github.io/languages-visualizations/v2024.12.31/
 
-# New runner
+## New runner
 
 There's a new runner system that is supposed to replace the old one. The main goal is to eliminate start times from the benchmarks. The general strategy is that the programs being benchmarked do the benchmarking in-process, and only around the single piece of work that the benchmark is about. So for **fibonacci** only the call to the function calculating the fibonacci sum should be measured. Additionally each program (language) will be allowed the same amount of time to complete the benchmark work (as many times as it can).
 
-For this, each language will have to have some minimal utility/tooling for running the function-under-benchmark as many times as a timeout allows, plus reporting the measurements and the result. Take a look at the Clojure utility for this here:
+For this, each language will have to have some minimal utility/tooling for running the function-under-benchmark as many times as a timeout allows, plus reporting the measurements and the result. Here are two implementations, that we can regard as being reference:
 
 * [benchmark.clj](lib/clojure/src/languages/benchmark.clj)
+* [benchmark.java](lib/java/languages/Benchmark.java)
 
 You'll see that the `benchmark/run` function takes two arguments:
 
 1. `f`: A function (a thunk)
 1. `run-ms`: A total time in milliseconds within which the function should be run as many times as possible
 
-To make the overhead of running and measuring as small as possible, the runner takes a delta time for each time it calls the function. It is when the sum of these deltas, `total-elapsed-time`, is over the `run-ms` time that we stop calling `f`. So, for a `run-ms` of `1000` the total runtime will always be longer than a second. Because we will almost always “overshoot” with the last run, and because the overhead of running and keeping tally, even if tiny, will always be _something_.
+To make the overhead of running and measuring as small as possible, the runner takes a delta time for each time it calls `f`. It is when the sum of these deltas, `total-elapsed-time`, is over the `run-ms` time that we stop calling `f`. So, for a `run-ms` of `1000` the total runtime will always be longer than a second. Because we will almost always “overshoot” with the last run, and because the overhead of running and keeping tally, even if tiny, will always be _something_.
 
 The benchmark/run function is responsible to report back the result/answer to the task being benchmarked, as well as some stats, like mean run time, standard deviation, min and max times, and how many runs where completed.
 
-## Running a benchmark
+### Running a benchmark
 
 The new run script is named [run-benchmark.sh](run-benchmark.sh). Let's say we run it in the **levenstein** directory:
 
@@ -106,15 +107,36 @@ The default run time is `10000` ms. `-u` sets the user name (preferably your Git
 
 ```csv
 benchmark,commit_sha,is_checked,user,model,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,times
-levenshtein,71522af,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,56.71918479661017,0.7090638881754041,55.656875,59.437083,177
-levenshtein,71522af,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.4296661686747,1.4309572728443212,58.650166,72.786958,166
+levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,56.71740042937853,0.657172122796455,55.499417,60.37675,177
+levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.42721710843373,1.1154957600761444,58.840334,68.268292,166
+levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Java,10000,55.406990,1.319804,52.539709,59.099084,181
+levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Java Native,10000,63.710922,3.294451,55.085000,74.270625,157
 ```
 
-It's a CSV file you can open in Excel or consume with your favorite language. As you can see, it has some meta data about the run, in addition to the benchmark results. **Clojure** ran the benchmark 177 times, with a mean time of **56.7 ms**. Which shows the point with the new runner, considering that Clojure takes **300 ms** to start.
+It's a CSV file you can open in something Excel-ish or consume with your favorite language.
 
-See [run-benchmark.sh](run-benchmark.sh) for some more command line options it accepts. Let's note one of them: `-l` which takes a string of comma separated language names, and only those languages will be run. Good for when contributing a new language or updates to a language.
+![Example Result CSV in Numbers.app](docs/example-results-csv.png)
 
-## Compiling a benchmark
+As you can see, it has some meta data about the run, in addition to the benchmark results. **Clojure** ran the benchmark 177 times, with a mean time of **56.7 ms**. Which shows the point with the new runner, considering that Clojure takes **300 ms** to start.
+
+See [run-benchmark.sh](run-benchmark.sh) for some more command line options it accepts. Let's note one of them: `-l` which takes a string of comma separated language names, and only those languages will be run. Good for when contributing a new language or updates to a language. E.g:
+
+```
+~/Projects/languages/levenshtein ❯ ../run-benchmark.sh -u PEZ -l Clojure
+Running levenshtein benchmark...
+Results will be written to: /tmp/languages-benchmark/levenshtein_PEZ_10000_5bb1995_only_langs.csv
+
+Checking levenshtein Clojure
+Check passed
+Benchmarking levenshtein Clojure
+java -cp clojure/classes:src:/Users/pez/.m2/repository/org/clojure/clojure/1.12.0/clojure-1.12.0.jar:/Users/pez/.m2/repository/org/clojure/core.specs.alpha/0.4.74/core.specs.alpha-0.4.74.jar:/Users/pez/.m2/repository/org/clojure/spec.alpha/0.5.238/spec.alpha-0.5.238.jar run 10000 levenshtein-words.txt
+levenshtein,5bb1995,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,56.84122918181818,0.8759056030546785,55.214541,59.573,176
+
+Done running levenshtein benchmark
+Results were written to: /tmp/languages-benchmark/levenshtein_PEZ_10000_5bb1995_only_langs.csv
+```
+
+### Compiling a benchmark
 
 This works as before, but since the new programs are named `run` instead of `code`, we need a new script. Meet: [compile-benchmark.sh](compile-benchmark.sh)
 
@@ -122,7 +144,7 @@ This works as before, but since the new programs are named `run` instead of `cod
 ../compile-benchmark.sh
 ```
 
-## Adding a language
+### Adding a language
 
 To add a language for a benchmark to the new runner you'll need to add:
 
@@ -138,7 +160,7 @@ The `main` function of the program provided should take two arguments:
 1. The input to the function
    - There is only one input argument, unlike before. How this input argument should be interpreted depends on the benchmark. For **levenshtein** it is a file path, to the file containing the words to use for the test.
 
-As noted before the program should run the function-under-benchmark as many times as it can, following the example of the **Clojure** implementation mentioned above. The program is allowed to use an equal amount of time as the run time for warmup, so that any JIT compilers will have had some chance to optimize.
+As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to use an equal amount of time as the run time for warmup, so that any JIT compilers will have had some chance to optimize.
 
 The program should output a csv row with:
 
@@ -156,7 +178,7 @@ mean_ms,std-dev-ms,min_ms,max_ms,times,result
   1. There is a single result, the sum of the distances.
 * **hello-world**: No changes.
   * It needs to accept and ignore the two arguments
-  * There is no benchmarking code in there, because it will be run the old way using **hyperfine**
+  * There is no benchmarking code in there, because it will be benchmarked out-of-process, using **hyperfine**
 
 Let's look at the `-main` function for the Clojure **levenshtein** contribution:
 
@@ -174,4 +196,8 @@ Let's look at the `-main` function for the Clojure **levenshtein** contribution:
         println)))
 ```
 
-The `benchmark/run` function returns a map with the measurements and the result keyed on `:result`. This result is a sequence of all the distances. We sum them and then format the output with this sum instead.
+The `benchmark/run` function returns a map with the measurements and the result keyed on `:result`. *This result is a sequence of all the distances.* Outside the benchmarked function we sum the distances, and then format the output with this sum. It's done this way to minimize the impact that the benchmarking needs has on the benchmarked work. (See [levenshtein/jvm/run.java](levenshtein/jvm/run.java) if the Lisp is tricky to read for you.)
+
+### You can help
+
+Please consider helping us making a speedy transition by porting your favorite language(s) from the old runner to this new one.
