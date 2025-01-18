@@ -139,6 +139,7 @@ function run {
 # Please keep in language name alphabetic order
 # run "Language name" "File that should exist" "Command line"
 ####### BEGIN The languages
+run "Babashka" "bb/run.clj" "bb bb/run.clj"
 run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
 run "Java" "./jvm/run.class" "java -cp .:../lib/java jvm.run"
