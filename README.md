@@ -85,6 +85,7 @@ For this, each language will have to have some minimal utility/tooling for runni
 
 * [benchmark.clj](lib/clojure/src/languages/benchmark.clj)
 * [benchmark.java](lib/java/languages/Benchmark.java)
+* [benchmark.c](lib/c/benchmark.c) (This one may need some scrutiny from C experts before we fully label it as *reference*.)
 
 You'll see that the `benchmark/run` function takes two arguments:
 
@@ -107,11 +108,12 @@ The default run time is `10000` ms. `-u` sets the user name (preferably your Git
 
 ```csv
 benchmark,commit_sha,is_checked,user,model,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,times
-levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Babashka,10000,23521.408167,0.0,23521.408167,23521.408167,1
-levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,57.37351194285714,5.3806423301901845,55.77275,125.076208,175
-levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.39511344578313,1.1564638823645572,58.955917,65.086,166
-levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Java,10000,55.280637,1.975461,52.659084,64.202375,181
-levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Java Native,10000,63.549330,4.861132,53.100375,74.261416,158
+levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Babashka,10000,23427.881083,0.0,23427.881083,23427.881083,1
+levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,C,10000,31.807073,0.445006,30.904000,34.647000,315
+levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,56.76691828813559,0.5267686832135136,55.877417,58.812042,177
+levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.57034990963855,1.0826489831713852,59.068291,64.627208,166
+levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Java,10000,54.729889,1.487086,51.871208,60.350333,183
+levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Java Native,10000,62.124475,3.009835,54.422417,69.038625,161
 ```
 
 It's a CSV file you can open in something Excel-ish or consume with your favorite language.
@@ -197,7 +199,7 @@ Let's look at the `-main` function for the Clojure **levenshtein** contribution:
         println)))
 ```
 
-The `benchmark/run` function returns a map with the measurements and the result keyed on `:result`. *This result is a sequence of all the distances.* Outside the benchmarked function we sum the distances, and then format the output with this sum. It's done this way to minimize the impact that the benchmarking needs has on the benchmarked work. (See [levenshtein/jvm/run.java](levenshtein/jvm/run.java) if the Lisp is tricky to read for you.)
+The `benchmark/run` function returns a map with the measurements and the result keyed on `:result`. *This result is a sequence of all the distances.* Outside the benchmarked function we sum the distances, and then format the output with this sum. It's done this way to minimize the impact that the benchmarking needs has on the benchmarked work. (See [levenshtein/jvm/run.java](levenshtein/jvm/run.java) or [levenshtein/c/run.c](levenshtein/c/run.c) if the Lisp is tricky to read for you.)
 
 ### You can help
 
