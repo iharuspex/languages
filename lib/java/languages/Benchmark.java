@@ -20,6 +20,7 @@ public class Benchmark {
   private record TimedResult<T>(long totalElapsedTime, long elapsedTime, T result) {
   }
 
+  /* Calculates statistics in ms for input in ns */
   private static class Stats {
     final double meanMs;
     final double stdDevMs;
@@ -27,14 +28,14 @@ public class Benchmark {
     final double maxMs;
     final int runs;
 
-    Stats(long totalElapsedTime, List<Long> elapsedTimes) {
-      this.runs = elapsedTimes.size();
-      this.meanMs = elapsedTimes.stream()
+    Stats(long totalElapsedTimeNs, List<Long> elapsedTimesNs) {
+      this.runs = elapsedTimesNs.size();
+      this.meanMs = elapsedTimesNs.stream()
           .mapToDouble(t -> t / 1_000_000.0)
           .average()
           .orElse(0.0);
 
-      double variance = elapsedTimes.stream()
+      double variance = elapsedTimesNs.stream()
           .mapToDouble(t -> t / 1_000_000.0)
           .map(t -> t - meanMs)
           .map(d -> d * d)
@@ -42,17 +43,24 @@ public class Benchmark {
           .orElse(0.0);
 
       this.stdDevMs = Math.sqrt(variance);
-      this.minMs = elapsedTimes.stream()
+      this.minMs = elapsedTimesNs.stream()
           .mapToDouble(t -> t / 1_000_000.0)
           .min()
           .orElse(0.0);
-      this.maxMs = elapsedTimes.stream()
+      this.maxMs = elapsedTimesNs.stream()
           .mapToDouble(t -> t / 1_000_000.0)
           .max()
           .orElse(0.0);
     }
   }
 
+  /**
+   * Runs `f` repeatedly measuring the time delta in nanoseconds.
+   * Stops when the sum of the deltas is larger than `runMs`.
+   * Returns a record with stats and result.
+   * NB: If `f` takes sub-milliseconds to run, this function can run for very long
+   * because of the overhead of looping so many times.
+   */
   public static <T> BenchmarkResult<T> run(Supplier<T> f, long runMs) {
     long runNs = runMs * 1_000_000;
     List<TimedResult<T>> results = new ArrayList<>();
@@ -82,6 +90,9 @@ public class Benchmark {
         lastResult.result);
   }
 
+  /**
+   * Formats the benchmark results into a comma-separated string.
+   */
   public static String formatResults(BenchmarkResult<?> result) {
     return String.format("%.6f,%.6f,%.6f,%.6f,%d,%s",
         result.meanMs,
