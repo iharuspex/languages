@@ -107,17 +107,18 @@ The default run time is `10000` ms. `-u` sets the user name (preferably your Git
 
 ```csv
 benchmark,commit_sha,is_checked,user,model,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,times
-levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,56.71740042937853,0.657172122796455,55.499417,60.37675,177
-levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.42721710843373,1.1154957600761444,58.840334,68.268292,166
-levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Java,10000,55.406990,1.319804,52.539709,59.099084,181
-levenshtein,00b3047,true,PEZ,Apple M4 Max,darwin24,arm64,Java Native,10000,63.710922,3.294451,55.085000,74.270625,157
+levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Babashka,10000,23521.408167,0.0,23521.408167,23521.408167,1
+levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,57.37351194285714,5.3806423301901845,55.77275,125.076208,175
+levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.39511344578313,1.1564638823645572,58.955917,65.086,166
+levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Java,10000,55.280637,1.975461,52.659084,64.202375,181
+levenshtein,4c83540,true,PEZ,Apple M4 Max,darwin24,arm64,Java Native,10000,63.549330,4.861132,53.100375,74.261416,158
 ```
 
 It's a CSV file you can open in something Excel-ish or consume with your favorite language.
 
 ![Example Result CSV in Numbers.app](docs/example-results-csv.png)
 
-As you can see, it has some meta data about the run, in addition to the benchmark results. **Clojure** ran the benchmark 177 times, with a mean time of **56.7 ms**. Which shows the point with the new runner, considering that Clojure takes **300 ms** to start.
+As you can see, it has some meta data about the run, in addition to the benchmark results. **Clojure** ran the benchmark 175 times, with a mean time of **57.3 ms**. Which shows the point with the new runner, considering that Clojure takes **300 ms** (on the same machine) to start.
 
 See [run-benchmark.sh](run-benchmark.sh) for some more command line options it accepts. Let's note one of them: `-l` which takes a string of comma separated language names, and only those languages will be run. Good for when contributing a new language or updates to a language. E.g:
 
