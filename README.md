@@ -107,16 +107,16 @@ The new run script is named [run-benchmark.sh](run-benchmark.sh). Let's say we r
 The default run time is `10000` ms. `-u` sets the user name (preferably your GitHub handle). The output was this:
 
 ```csv
-benchmark,commit_sha,is_checked,user,model,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,times
-levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Babashka,10000,23427.881083,0.0,23427.881083,23427.881083,1
-levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,C,10000,31.807073,0.445006,30.904000,34.647000,315
-levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure,10000,56.76691828813559,0.5267686832135136,55.877417,58.812042,177
-levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Clojure Native,10000,60.57034990963855,1.0826489831713852,59.068291,64.627208,166
-levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Java,10000,54.729889,1.487086,51.871208,60.350333,183
-levenshtein,ed184a0,true,PEZ,Apple M4 Max,darwin24,arm64,Java Native,10000,62.124475,3.009835,54.422417,69.038625,161
+benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs
+levenshtein,2025-01-18T23:32:41Z,8e63938,true,PEZ,Apple M4 Max,64GB,darwin24,arm64,Babashka,10000,23376.012916,0.0,23376.012916,23376.012916,1
+levenshtein,2025-01-18T23:32:41Z,8e63938,true,PEZ,Apple M4 Max,64GB,darwin24,arm64,C,10000,31.874277,0.448673,31.286000,35.599000,314
+levenshtein,2025-01-18T23:32:41Z,8e63938,true,PEZ,Apple M4 Max,64GB,darwin24,arm64,Clojure,10000,57.27048066857143,2.210445845051782,55.554958,75.566792,175
+levenshtein,2025-01-18T23:32:41Z,8e63938,true,PEZ,Apple M4 Max,64GB,darwin24,arm64,Clojure Native,10000,59.95592388622754,0.8493245545620596,58.963833,62.897834,167
+levenshtein,2025-01-18T23:32:41Z,8e63938,true,PEZ,Apple M4 Max,64GB,darwin24,arm64,Java,10000,55.194704,1.624322,52.463125,63.390833,182
+levenshtein,2025-01-18T23:32:41Z,8e63938,true,PEZ,Apple M4 Max,64GB,darwin24,arm64,Java Native,10000,60.704966,6.579482,51.807750,96.343541,165
 ```
 
-It's a CSV file you can open in something Excel-ish or consume with your favorite language.
+It's a CSV file you can open in something Excel-ish, or consume with your favorite programming language.
 
 ![Example Result CSV in Numbers.app](docs/example-results-csv.png)
 

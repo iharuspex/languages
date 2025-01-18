@@ -41,27 +41,36 @@ if [ -n "${input_value}" ]; then
 fi
 
 commit_sha=$(git rev-parse --short HEAD)
+timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 benchmark_dir="/tmp/languages-benchmark"
 os=${OSTYPE//,/_}
 arch=$(uname -m)
 
-if [[ "${os}" == "darwin"* ]]; then
+if [[ "${os}" == "darwin"* || "${os}" == "freebsd"* ]]; then
     model=$(sysctl -n machdep.cpu.brand_string)
 elif [[ "${os}" == "linux-gnu"* ]]; then
     model=$(lscpu | grep "Model name" | awk -F: '{print $2}' | sed -e 's/^[[:space:]]*//')
-elif [[ "${os}" == "freebsd"* ]]; then
-    model=$(sysctl -n machdep.cpu.brand_string)
 else
     model="Unknown"
 fi
 model=${model//,/_}
+
+if [[ "${os}" == "darwin"* || "${os}" == "freebsd"* ]]; then
+  ram=$(sysctl -n hw.memsize)
+  ram=$((ram / 1024 / 1024 / 1024))GB
+elif [[ "${os}" == "linux-gnu"* ]]; then
+  ram=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+  ram=$((ram / 1024 / 1024))GB
+else
+  ram="Unknown"
+fi
 
 mkdir -p "${benchmark_dir}"
 results_file_name="${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
 results_file="${benchmark_dir}/${results_file_name}"
 # Data header, must match what is printed from `run`
 if [ "${check_only}" = false ]; then
-  echo "benchmark,commit_sha,is_checked,user,model,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,times" > "${results_file}"
+  echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
   echo "Running ${benchmark} benchmark..."
   echo "Results will be written to: ${results_file}"
 else
@@ -129,7 +138,7 @@ function run {
         local program_output=$(eval "${command_line}")
         result=$(echo "${program_output}" | awk -F ',' '{print $1","$2","$3","$4","$5}')
       fi
-      echo "${benchmark},${commit_sha},${is_checked},${user},${model},${os},${arch},${language_name},${run_ms},${result}" | tee -a "${results_file}"
+      echo "${benchmark},${timestamp},${commit_sha},${is_checked},${user},${model},${ram},${os},${arch},${language_name},${run_ms},${result}" | tee -a "${results_file}"
     fi
   else
     echo "No executable or script found for ${language_name}. Skipping."
