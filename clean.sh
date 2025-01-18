@@ -1,5 +1,5 @@
 rm c3/code
-rm c/code
+rm c/{code,run}
 rm cpp/code
 rm go/code
 rm -rf jvm/{*.class,*.iprof}
