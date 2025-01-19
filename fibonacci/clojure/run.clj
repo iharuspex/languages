@@ -10,27 +10,18 @@
 (deftype Fibonacci []
   IFib
   (fib [_  n]
-    (if (or (zero? n)
-            (== 1 n))
+    (if (< n 2)
       (long n)
       (long (+ (.fib _ (- n 1))
                (.fib _ (- n 2)))))))
 
 (def ^:private ^Fibonacci fibonacci (Fibonacci.))
 
-(defn- fib-sum [^long n]
-  (let [r (loop [i 1
-                 sum 0]
-            (if (< i n)
-              (recur (inc i) (+ sum (long (.fib fibonacci i))))
-              sum))]
-    r))
-
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
         n (parse-long (second args))
-        _ (benchmark/run #(fib-sum n) run-ms)]
-    (-> (benchmark/run #(fib-sum n) run-ms)
+        _ (benchmark/run #(.fib fibonacci n) run-ms)]
+    (-> (benchmark/run #(.fib fibonacci n) run-ms)
         benchmark/format-results 
         println)))
 

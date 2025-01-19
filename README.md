@@ -173,7 +173,10 @@ mean_ms,std-dev-ms,min_ms,max_ms,times,result
 
 ### Some changes to the benchmarks:
 
-* **fibonacci**: The input is now `36`, to allow slower languages to complete more runs.
+* **fibonacci**: 
+  * The program should return the result of `fib(n)`. This is to keep the benchmark focused on one thing.
+  * Early exit for `n < 2` are now allowed, again to keep the benchmark focused.
+  * The input is now `37`, to allow slower languages to complete more runs.
 * **loops**: The inner loop is now 10k, again to allow slower languages to complete more runs.
 * **levenshtein**:
   1. Smaller input (slower languages...)

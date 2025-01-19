@@ -9,23 +9,14 @@
 #include "stdlib.h"
 
 int32_t fibonacci(int32_t n) {
-  if (n == 0) return 0;
-  if (n == 1) return 1;
+  if (n < 2) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-static int32_t fib_sum(int32_t n) {
-  int32_t sum = 0;
-  for (int32_t i = 1; i < n; i++) {
-    sum += fibonacci(i);
-  }
-  return sum;
 }
 
 // The work function that benchmark will time
 static benchmark_result_t work(void* data) {
   int* n = (int*)data;
-  int r = fib_sum(*n);
+  int r = fibonacci(*n);
   benchmark_result_t result = {.value.number = r};
   return result;
 }
