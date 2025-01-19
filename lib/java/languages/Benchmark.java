@@ -67,7 +67,7 @@ public class Benchmark {
     long totalElapsedTime = 0;
     long lastStatusT = System.nanoTime();
 
-    if (runMs > 1) {
+    if (runMs > 1) { // Start with printing a status dot, except if check-output run
       System.err.print(".");
       System.err.flush();
     }
@@ -75,6 +75,7 @@ public class Benchmark {
       long t0 = System.nanoTime();
       T result = f.get();
       long t1 = System.nanoTime();
+      // Only print status dot if not check-output run
       if (runMs > 1 && t1 - lastStatusT > 1_000_000_000) {
         lastStatusT = t1;
         System.err.print(".");
@@ -84,7 +85,7 @@ public class Benchmark {
       totalElapsedTime += elapsedTime;
       results.add(new TimedResult<>(totalElapsedTime, elapsedTime, result));
     }
-    if (runMs > 1) {
+    if (runMs > 1) { // No status printed for check-output runs
       System.err.println();
     }
 

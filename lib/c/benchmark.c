@@ -41,6 +41,7 @@ static double calculate_std_dev(timed_result_t* results, int count,
   return sqrt(sum_squares / count);
 }
 
+// run_ms is 1 for the check-output run
 benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
   int64_t run_ns = (int64_t)run_ms * 1000000;
   int64_t total_elapsed = 0;
@@ -51,7 +52,7 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
 
   benchmark_result_t last_result;
 
-  if (run_ms > 1) {
+  if (run_ms > 1) { // Start with a status dot, but not if this is a check-output run
     fprintf(stderr, ".");
     fflush(stderr);
   }
@@ -61,6 +62,7 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
     int64_t t0 = get_time_ns();
     last_result = fn(data);
     int64_t t1 = get_time_ns();
+    // Don't print status dots if it is a check-output run
     if (run_ms > 1 && t1 - last_status_t > 1000000000) {
       last_status_t = t1;
       fprintf(stderr, ".");
@@ -79,6 +81,8 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
     count++;
   }
 
+  // If this is a check-output run we haven't printed any status dots, 
+  // so no newline should be printed either
   if (run_ms > 1) fprintf(stderr, "\n");
 
   double mean = calculate_mean(results, count);
