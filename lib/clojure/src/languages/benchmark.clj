@@ -29,6 +29,7 @@
   [f ^long run-ms]
   (let [run-ns (* 1000000 run-ms)
         runs (binding [*out* *err*]
+               (when (> run-ms 2) (print ".") (flush))
                (loop [results []
                       last-tet 0
                       last-status-t (System/nanoTime)]
