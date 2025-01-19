@@ -21,48 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "benchmark.h"
-
-static char** read_words(const char* filename, int* word_count) {
-  // First read entire file content
-  FILE* file = fopen(filename, "r");
-  if (!file) {
-    fprintf(stderr, "Could not open file: %s\n", filename);
-    exit(1);
-  }
-
-  // Get file size
-  fseek(file, 0, SEEK_END);
-  long file_size = ftell(file);
-  fseek(file, 0, SEEK_SET);
-
-  // Read entire file into buffer
-  char* content = malloc(file_size + 1);
-  fread(content, 1, file_size, file);
-  content[file_size] = '\0';
-  fclose(file);
-
-  // Count words (space separated)
-  int capacity = 100;
-  char** words = malloc(capacity * sizeof(char*));
-  *word_count = 0;
-
-  // Split on whitespace
-  char* word = strtok(content, " \n\t\r");
-  while (word != NULL) {
-    if (*word_count == capacity) {
-      capacity *= 2;
-      words = realloc(words, capacity * sizeof(char*));
-    }
-    words[*word_count] = strdup(word);
-    (*word_count)++;
-    word = strtok(NULL, " \n\t\r");
-  }
-
-  free(content);
-  return words;
-}
 
 // Can either define your own min function
 // or use a language / standard library function
@@ -119,6 +78,46 @@ int levenshtein_distance(const char* s1, const char* s2) {
 
   // Return final distance, stored in prev[m]
   return prev[m];
+}
+
+static char** read_words(const char* filename, int* word_count) {
+  // First read entire file content
+  FILE* file = fopen(filename, "r");
+  if (!file) {
+    fprintf(stderr, "Could not open file: %s\n", filename);
+    exit(1);
+  }
+
+  // Get file size
+  fseek(file, 0, SEEK_END);
+  long file_size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  // Read entire file into buffer
+  char* content = malloc(file_size + 1);
+  fread(content, 1, file_size, file);
+  content[file_size] = '\0';
+  fclose(file);
+
+  // Count words (space separated)
+  int capacity = 100;
+  char** words = malloc(capacity * sizeof(char*));
+  *word_count = 0;
+
+  // Split on lines
+  char* word = strtok(content, "\n");
+  while (word != NULL) {
+    if (*word_count == capacity) {
+      capacity *= 2;
+      words = realloc(words, capacity * sizeof(char*));
+    }
+    words[*word_count] = strdup(word);
+    (*word_count)++;
+    word = strtok(NULL, "\n");
+  }
+
+  free(content);
+  return words;
 }
 
 typedef struct {

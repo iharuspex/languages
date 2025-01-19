@@ -47,7 +47,7 @@
   (let [run-ms (parse-long (first args))
         input-path (second args)
         strings (-> (slurp input-path)
-                    (string/split #"\s+"))
+                    (string/split-lines))
         _warmup (benchmark/run #(levenshtein-distances strings) run-ms)
         results (benchmark/run #(levenshtein-distances strings) run-ms)]
     (-> results

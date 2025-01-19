@@ -38,7 +38,7 @@
   (let [run-ms (parse-long (first *command-line-args*)) 
         input-path (second *command-line-args*)
         strings (-> (slurp input-path)
-                    (string/split #"\s+"))
+                    (string/split-lines))
         results (benchmark/run #(levenshtein-distances strings) run-ms)]
     (-> results
         (update :result (partial reduce +))
