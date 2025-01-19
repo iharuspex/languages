@@ -5,77 +5,7 @@ A repo for collaboratively building small benchmarks to compare languages.
 If you have a suggestion for improvement: PR!
 If you want to add a language: PR!
 
-## Running
-
-See also: [New runner](#new-runner)
-
-To run one of the benchmarks:
-
-1. `cd` into desired benchmark directory (EG `$ cd loops`)
-2. Compile by running `$ ../compile.sh`
-3. Run via `$ ../run.sh`.
-  You should see output something like:
-  
-  ```
-  $ ../run.sh
-
-  Benchmarking Zig
-  Benchmark 1: ./zig/code 40
-    Time (mean ± σ):     513.9 ms ±   2.9 ms    [User: 504.5 ms, System: 2.6 ms]
-    Range (min … max):   510.6 ms … 516.2 ms    3 runs
-
-
-  Benchmarking C
-  Benchmark 1: ./c/code 40
-    Time (mean ± σ):     514.0 ms ±   1.1 ms    [User: 505.6 ms, System: 2.8 ms]
-    Range (min … max):   513.2 ms … 515.2 ms    3 runs
-
-
-  Benchmarking Rust
-  Benchmark 1: ./rust/target/release/code 40
-    Time (mean ± σ):     514.1 ms ±   2.0 ms    [User: 504.6 ms, System: 3.1 ms]
-    Range (min … max):   512.4 ms … 516.3 ms    3 runs
-
-  ...
-  ```
-
-4. For good measure, execute `$ ../clean.sh` when finished.
-
-Hyperfine is used to warm, execute, and time the runs of the programs.
-
-## Adding
-
-To add a language:
-
-1. Select the benchmark directory you want to add to (EG `$ cd loops`)
-2. Create a new subdirectory for the language (EG `$ mkdir rust`)
-3. Implement the code in the appropriately named file (EG: `code.rs`)
-4. If the language is compiled, add appropriate command to `../compile.sh` and `../clean.sh`
-5. Add appropriate line to `../run.sh`
-
 You are also welcome to add new top-level benchmarks dirs
-
-## Available Benchmarks
-
-#### [hello-world](./hello-world/README.md)
-
-#### [loops](./loops/README.md)
-
-#### [fibonacci](./fibonacci/README.md)
-
-#### [levenshtein](./levenshtein/README.md)
-
-## Corresponding visuals
-
-Several visuals have been published based on the work here.
-More will likely be added in the future, as this repository improves:
-
-- https://benjdd.com/languages
-- https://benjdd.com/languages2
-- https://benjdd.com/languages3
-- https://pez.github.io/languages-visualizations/ 
-  - check https://github.com/PEZ/languages-visualizations/tags for tags, which correspond to a snapshot of some particular benchmark run: e.g:
-  - https://pez.github.io/languages-visualizations/v2024.12.31/
 
 ## New runner
 
@@ -151,7 +81,7 @@ This works as before, but since the new programs are named `run` instead of `cod
 
 To add a language for a benchmark to the new runner you'll need to add:
 
-1. A benchmarking utility
+1. A benchmarking utility in `lib/<language>`
 1. Code in `<benchmark>/<language>/run.<language-extension>` (plus whatever extra project files)
 1. An entry in `compile-benchmark.sh`
 1. An entry in `run-benchmark.sh`
@@ -206,4 +136,72 @@ The `benchmark/run` function returns a map with the measurements and the result 
 
 ### You can help
 
-Please consider helping us making a speedy transition by porting your favorite language(s) from the old runner to this new one.
+Please consider helping us making a speedy transition by porting your favorite language(s) from the [old runner](#running-legacy) to this new one.
+
+## Available Benchmarks
+
+#### [hello-world](./hello-world/README.md)
+
+#### [loops](./loops/README.md)
+
+#### [fibonacci](./fibonacci/README.md)
+
+#### [levenshtein](./levenshtein/README.md)
+
+## Corresponding visuals
+
+Several visuals have been published based on the work here.
+More will likely be added in the future, as this repository improves:
+
+- https://benjdd.com/languages
+- https://benjdd.com/languages2
+- https://benjdd.com/languages3
+- https://pez.github.io/languages-visualizations/ 
+  - check https://github.com/PEZ/languages-visualizations/tags for tags, which correspond to a snapshot of some particular benchmark run: e.g:
+  - https://pez.github.io/languages-visualizations/v2024.12.31/
+
+## Running (Legacy)
+
+To run one of the benchmarks:
+
+1. `cd` into desired benchmark directory (EG `$ cd loops`)
+2. Compile by running `$ ../compile.sh`
+3. Run via `$ ../run.sh`.
+  You should see output something like:
+  
+  ```
+  $ ../run.sh
+
+  Benchmarking Zig
+  Benchmark 1: ./zig/code 40
+    Time (mean ± σ):     513.9 ms ±   2.9 ms    [User: 504.5 ms, System: 2.6 ms]
+    Range (min … max):   510.6 ms … 516.2 ms    3 runs
+
+
+  Benchmarking C
+  Benchmark 1: ./c/code 40
+    Time (mean ± σ):     514.0 ms ±   1.1 ms    [User: 505.6 ms, System: 2.8 ms]
+    Range (min … max):   513.2 ms … 515.2 ms    3 runs
+
+
+  Benchmarking Rust
+  Benchmark 1: ./rust/target/release/code 40
+    Time (mean ± σ):     514.1 ms ±   2.0 ms    [User: 504.6 ms, System: 3.1 ms]
+    Range (min … max):   512.4 ms … 516.3 ms    3 runs
+
+  ...
+  ```
+
+4. For good measure, execute `$ ../clean.sh` when finished.
+
+Hyperfine is used to warm, execute, and time the runs of the programs.
+
+## Adding (Legacy)
+
+To add a language:
+
+1. Select the benchmark directory you want to add to (EG `$ cd loops`)
+2. Create a new subdirectory for the language (EG `$ mkdir rust`)
+3. Implement the code in the appropriately named file (EG: `code.rs`)
+4. If the language is compiled, add appropriate command to `../compile.sh` and `../clean.sh`
+5. Add appropriate line to `../run.sh`
