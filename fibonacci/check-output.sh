@@ -1,7 +1,7 @@
 #!/bin/bash
 
-input=36
-expected_result="24157816"
+input=37
+expected_result="24157817"
 echo_input=false
 
 while getopts "i" opt; do
