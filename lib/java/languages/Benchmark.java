@@ -65,14 +65,27 @@ public class Benchmark {
     long runNs = runMs * 1_000_000;
     List<TimedResult<T>> results = new ArrayList<>();
     long totalElapsedTime = 0;
+    long lastStatusT = System.nanoTime();
 
+    if (runMs > 1) {
+      System.err.print(".");
+      System.err.flush();
+    }
     while (totalElapsedTime < runNs) {
       long t0 = System.nanoTime();
       T result = f.get();
       long t1 = System.nanoTime();
+      if (runMs > 1 && t1 - lastStatusT > 1_000_000_000) {
+        lastStatusT = t1;
+        System.err.print(".");
+        System.err.flush();
+      }
       long elapsedTime = t1 - t0;
       totalElapsedTime += elapsedTime;
       results.add(new TimedResult<>(totalElapsedTime, elapsedTime, result));
+    }
+    if (runMs > 1) {
+      System.err.println();
     }
 
     TimedResult<T> lastResult = results.get(results.size() - 1);
