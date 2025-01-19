@@ -28,17 +28,26 @@
        because of the overhead of looping so many times."
   [f ^long run-ms]
   (let [run-ns (* 1000000 run-ms)
-        runs (loop [results []
-                    last-tet 0]
-               (let [t0 (System/nanoTime)
-                     result (f)
-                     t1 (System/nanoTime)
-                     elapsed-time (- t1 t0)
-                     total-elapsed-time (+ last-tet elapsed-time)
-                     timed-result [total-elapsed-time elapsed-time result]]
-                 (if (< total-elapsed-time run-ns)
-                   (recur (conj results timed-result) total-elapsed-time)
-                   (conj results timed-result))))
+        runs (binding [*out* *err*]
+               (loop [results []
+                      last-tet 0
+                      last-status-t (System/nanoTime)]
+                 (let [t0 (System/nanoTime)
+                       result (f)
+                       t1 (System/nanoTime)
+                       elapsed-time (- t1 t0)
+                       total-elapsed-time (+ last-tet elapsed-time)
+                       timed-result [total-elapsed-time elapsed-time result]
+                       print-status? (and (> run-ms 2)
+                                          (> (- t1 last-status-t) 1000000000))]
+                   (when print-status? (print ".") (flush))
+                   (if (< total-elapsed-time run-ns)
+                     (recur (conj results timed-result) total-elapsed-time (if print-status?
+                                                                             t1
+                                                                             last-status-t))
+                     (do
+                       (when (> run-ms 2) (println))
+                       (conj results timed-result))))))
         [^long total-elapsed-time _ ^long result] (last runs)
         elapsed-times (map second runs)]
     (merge {:runs (count runs)
