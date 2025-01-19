@@ -1,4 +1,9 @@
 /**
+ * @file
+ * @brief This file uses Google style formatting.
+ */
+
+/**
  * This program implements the Levenshtein distance algorithm and provides
  * functionality to benchmark it with the following features:
  * - Reads words from an input file
@@ -180,8 +185,11 @@ int main(int argc, char* argv[]) {
     sum += distances->distances[i];
   }
 
-  printf("%.6f,%.6f,%.6f,%.6f,%d,%ld\n", stats.mean_ms, stats.std_dev_ms,
-         stats.min_ms, stats.max_ms, stats.runs, sum);
+  stats.last_result.value.number = sum;
+
+  char buffer[1024];
+  benchmark_format_results(stats, buffer, sizeof(buffer));
+  printf("%s\n", buffer);
 
   // Clean up everything
   free(distances->distances);

@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief This file uses Google style formatting.
+ */
+
 #include "benchmark.h"
 
 #include <math.h>
@@ -96,4 +101,11 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
                              .max_ms = max_ms,
                              .runs = count,
                              .last_result = last_result};
+}
+
+void benchmark_format_results(benchmark_stats_t stats, char* buffer,
+                              size_t size) {
+  snprintf(buffer, size, "%.6f,%.6f,%.6f,%.6f,%d,%ld", stats.mean_ms,
+           stats.std_dev_ms, stats.min_ms, stats.max_ms, stats.runs,
+           stats.last_result.value.number);
 }
