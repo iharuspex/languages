@@ -1,14 +1,52 @@
+#!/bin/bash
+
+benchmark=$(basename "${PWD}")
+
+# Defaults
+only_langs=false
+
+while getopts "cst:u:l:h" opt; do
+  case $opt in
+    l) only_langs="${OPTARG}" ;;    # Languages to benchmark, comma separated
+    *) ;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [ -n "${only_langs}" ] && [ "${only_langs}" != "false" ]; then
+    IFS=',' read -r -a only_langs <<< "${only_langs}"
+fi
+
 function compile {
-  if [ -d ${2} ]; then
+  local language_name=${1}
+  local directory=${2}
+  local compile_cmd=${3}
+
+  if [ "$only_langs" != false ]; then
+    local should_run=false
+    for lang in "${only_langs[@]}"; do
+      if [ "$lang" = "$language_name" ]; then
+        should_run=true
+        break
+      fi
+    done
+    if [ "$should_run" = false ]; then
+      return
+    fi
+  fi
+
+  if [ -d ${directory} ]; then
     echo ""
-    echo "Compiling $1"
-    eval "${3}"
+    echo "Compiling ${language_name}"
+    eval "${compile_cmd}"
     result=$?
     if [ $result -ne 0 ]; then
-        echo "Failed to compile ${1} with command: ${3}"
+        echo "Failed to compile ${language_name} with command: ${compile_cmd}"
     fi
   fi
 }
+
+echo "Starting compiles for ${benchmark}"
 
 # Please keep in language name alphabetic order
 # run "Language name" "File that should exist" "Command line"
@@ -19,3 +57,6 @@ compile 'Clojure Native' 'clojure-native-image' "(cd clojure-native-image ; cloj
 compile 'Java' 'jvm' 'javac -cp ../lib/java jvm/run.java'
 compile 'Java Native' 'java-native-image' "(cd java-native-image ; native-image -cp ..:../../lib/java --no-fallback -O3 --pgo-instrument -march=native jvm.run) && ./java-native-image/jvm.run -XX:ProfilesDumpFile=java-native-image/run.iprof 10000 $(./check-output.sh -i) && (cd java-native-image ; native-image -cp ..:../../lib/java -O3 --pgo=run.iprof -march=native jvm.run -o run)"
 ####### END The languages
+
+echo
+echo "Done with compiles for ${benchmark}"
