@@ -7,7 +7,8 @@
        (fibonacci (- n 2)))))
 
 (let [run-ms (parse-long (first *command-line-args*))
-      u (parse-long (second *command-line-args*))]
+      ; skip warmup arg, because we skip warmups
+      u (parse-long (nth *command-line-args* 2))]
   (-> (benchmark/run #(fibonacci u) run-ms)
       benchmark/format-results
       println))

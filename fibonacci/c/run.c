@@ -23,10 +23,9 @@ static benchmark_result_t work(void* data) {
 
 int main(int argc, char** argv) {
   int run_ms = atoi(argv[1]);
-  int u = atoi(argv[2]);
-  // Warmup
-  benchmark_run(work, &u, run_ms);
-  // Actual benchmark
+  int warmup_ms = atoi(argv[2]);
+  int u = atoi(argv[3]);
+  benchmark_run(work, &u, warmup_ms);
   benchmark_stats_t stats = benchmark_run(work, &u, run_ms);
   char buffer[1024];
   benchmark_format_results(stats, buffer, sizeof(buffer));

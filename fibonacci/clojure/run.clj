@@ -19,8 +19,9 @@
 
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
-        n (parse-long (second args))
-        _ (benchmark/run #(.fib fibonacci n) run-ms)]
+        warmup-ms (parse-long (second args))
+        n (parse-long (nth args 2))
+        _warmup (benchmark/run #(.fib fibonacci n) warmup-ms)]
     (-> (benchmark/run #(.fib fibonacci n) run-ms)
         benchmark/format-results 
         println)))
