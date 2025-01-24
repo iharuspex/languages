@@ -28,34 +28,35 @@
    NB: If `f` takes sub-milliseconds to run, this function can run for very long
        because of the overhead of looping so many times."
   [f ^long run-ms]
-  (let [run-ns (* 1000000 run-ms)
-        runs (binding [*out* *err*]
+  (when-not (zero? run-ms)
+    (let [run-ns (* 1000000 run-ms)
+          runs (binding [*out* *err*]
                ;; Start with printing a status dot, except if check-output run
-               (when (> run-ms 1) (print ".") (flush))
-               (loop [results []
-                      last-tet 0
-                      last-status-t (System/nanoTime)]
-                 (let [t0 (System/nanoTime)
-                       result (f)
-                       t1 (System/nanoTime)
-                       elapsed-time (- t1 t0)
-                       total-elapsed-time (+ last-tet elapsed-time)
-                       timed-result [total-elapsed-time elapsed-time result]
-                       print-status? (and (> run-ms 1) ; Not if check-output run
-                                          (> (- t1 last-status-t) 1000000000))]
-                   (when print-status? (print ".") (flush))
-                   (if (< total-elapsed-time run-ns)
-                     (recur (conj results timed-result) total-elapsed-time (if print-status?
-                                                                             t1
-                                                                             last-status-t))
-                     (do
-                       (when (> run-ms 1) (println)) ; No status printed for check-output runs
-                       (conj results timed-result))))))
-        [^long total-elapsed-time _ ^long result] (last runs)
-        elapsed-times (map second runs)]
-    (merge {:runs (count runs)
-            :result result}
-           (stats total-elapsed-time elapsed-times))))
+                 (when (> run-ms 1) (print ".") (flush))
+                 (loop [results []
+                        last-tet 0
+                        last-status-t (System/nanoTime)]
+                   (let [t0 (System/nanoTime)
+                         result (f)
+                         t1 (System/nanoTime)
+                         elapsed-time (- t1 t0)
+                         total-elapsed-time (+ last-tet elapsed-time)
+                         timed-result [total-elapsed-time elapsed-time result]
+                         print-status? (and (> run-ms 1) ; Not if check-output run
+                                            (> (- t1 last-status-t) 1000000000))]
+                     (when print-status? (print ".") (flush))
+                     (if (< total-elapsed-time run-ns)
+                       (recur (conj results timed-result) total-elapsed-time (if print-status?
+                                                                               t1
+                                                                               last-status-t))
+                       (do
+                         (when (> run-ms 1) (println)) ; No status printed for check-output runs
+                         (conj results timed-result))))))
+          [^long total-elapsed-time _ ^long result] (last runs)
+          elapsed-times (map second runs)]
+      (merge {:runs (count runs)
+              :result result}
+             (stats total-elapsed-time elapsed-times)))))
 
 (defn format-results [{:keys [mean-ms std-dev-ms min-ms max-ms runs result]}]
   (str (double mean-ms) "," (double std-dev-ms) "," (double min-ms) "," (double max-ms) "," runs "," result))
