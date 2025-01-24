@@ -19,8 +19,9 @@ public class run {
 
     public static void main(String[] args) {
         var runMs = Integer.parseInt(args[0]);
-        var n = Integer.parseInt(args[1]);
-        var _warmup = Benchmark.run(() -> loops(n), runMs);
+        var warmupMS = Integer.parseInt(args[1]);
+        var n = Integer.parseInt(args[2]);
+        Benchmark.run(() -> loops(n), warmupMS);
         var results = Benchmark.run(() -> loops(n), runMs);
         System.out.println(Benchmark.formatResults(results));
     }

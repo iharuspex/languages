@@ -19,8 +19,9 @@
 
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
-        u (parse-long (second args))
-        _ (benchmark/run #(loops u) run-ms)]
+        warmup-ms (parse-long (second args))
+        u (parse-long (nth args 2))
+        _warmup (benchmark/run #(loops u) warmup-ms)]
     (-> (benchmark/run #(loops u) run-ms)
         benchmark/format-results
         println)))
