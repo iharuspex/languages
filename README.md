@@ -133,6 +133,15 @@ The program should output a csv row with:
 mean_ms,std-dev-ms,min_ms,max_ms,times,result
 ```
 
+Before a PR with a new or ported language contribution will be merged, you should provide output (text) from a benchmark run. To facilitate this both `compile.sh` and `run.sh` takes a `-l <languages>` argument, where `<languages>` is a comma-seprated list of language names. E.g.:
+
+```sh
+$ ../compile.sh -l 'C,Clojure'
+$ ../run.sh -l 'C,Clojure'
+```
+
+Please provide output from all benchmark contributions you have added/touched.
+
 ### Changes to the benchmarks compared to legacy runner
 
 When adapting a language implementation of some benchmark, consider these differences
@@ -166,10 +175,6 @@ Let's look at the `-main` function for the Clojure **levenshtein** contribution:
 ```
 
 The `benchmark/run` function returns a map with the measurements and the result keyed on `:result`. *This result is a sequence of all the distances.* Outside the benchmarked function we sum the distances, and then format the output with this sum. It's done this way to minimize the impact that the benchmarking needs has on the benchmarked work. (See [levenshtein/jvm/run.java](levenshtein/jvm/run.java) or [levenshtein/c/run.c](levenshtein/c/run.c) if the Lisp is tricky to read for you.)
-
-### You can help
-
-Please consider helping us making a speedy transition by porting your favorite language(s) from the [old runner](#running-legacy) to this new one.
 
 ## Available Benchmarks
 
