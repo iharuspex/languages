@@ -6,16 +6,18 @@ benchmark=$(basename "${PWD}")
 check_only=false
 skip_check=false
 run_ms=10000
+warmup_ms=2000
 cmd_input="$(./check-output.sh -i)"
 user="JDoe"
 only_langs=false
 use_hyperfine=false
 [[ "$benchmark" == "hello-world" ]] && use_hyperfine=true
 
-while getopts "cst:u:l:h" opt; do
+while getopts "cst:w:u:l:h" opt; do
   case $opt in
     u) user="${OPTARG}" ;;          # Included in result file
     t) run_ms="${OPTARG}" ;;        # How long should the benchmark run?
+    w) warmup_ms="${OPTARG}" ;;     # Warmup length
     c) check_only=true ;;           # Skip benchmark
     s) skip_check=true ;;           # Run benchmark even if check fails (typically with non-default input)
     l) only_langs="${OPTARG}" ;;    # Languages to benchmark, comma separated
@@ -89,7 +91,7 @@ function check {
 
   if [ ${skip_check} = false ]; then
     echo "Checking ${benchmark} ${language_name}"
-    command_line="${partial_command} 1 ${input_arg}"
+    command_line="${partial_command} 1 0 ${input_arg}"
     program_output=$(${command_line})
     if ! ./check-output.sh "${program_output}"; then
       echo "Check failed for ${benchmark} ${language_name}."
@@ -127,13 +129,13 @@ function run {
     if [ ${?} -eq 0 ] && [ ${check_only} = false ]; then
       echo "Benchmarking ${benchmark} ${language_name}"
       if [ ${use_hyperfine} = true ]; then
-        local command_line="${partial_command} 1 ${cmd_input}"
+        local command_line="${partial_command} 1 0 ${cmd_input}"
         mkdir -p "${benchmark_dir}/hyperfine"
         hyperfine_file="${benchmark_dir}/hyperfine/${results_file_name}"
         hyperfine -i --shell=none --output=pipe --runs 25 --warmup 5 --export-csv "${hyperfine_file}" "${command_line}"
         result=$(tail -n +2 "${hyperfine_file}" | awk -F ',' '{print ($2*1000)","($3*1000)","($7*1000)","($8*1000)","25}')
       else
-        local command_line="${partial_command} ${run_ms} ${cmd_input}"
+        local command_line="${partial_command} ${run_ms} ${warmup_ms} ${cmd_input}"
         echo "${command_line}"
         local program_output=$(eval "${command_line}")
         result=$(echo "${program_output}" | awk -F ',' '{print $1","$2","$3","$4","$5}')

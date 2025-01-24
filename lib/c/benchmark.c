@@ -41,8 +41,12 @@ static double calculate_std_dev(timed_result_t* results, int count,
   return sqrt(sum_squares / count);
 }
 
-// run_ms is 1 for the check-output run
+// run_ms is:
+// 0 for "don't run"
+// 1 for the check-output run
 benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
+  if (run_ms == 0) return (benchmark_stats_t){};
+
   int64_t run_ns = (int64_t)run_ms * 1000000;
   int64_t total_elapsed = 0;
 

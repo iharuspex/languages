@@ -24,7 +24,7 @@
   "Runs `f` repeatedly measuring the time delta in nanoseconds
    Stops when the sum of the deltas is larger then `run-ms`
    Returns a map with stats and result.
-   Special case: `run-ms` is `1` for the check-output correctness test 
+   Special cases: When `run-ms` is: 0 => Don't run, `1` => this is a check-output correctness test 
    NB: If `f` takes sub-milliseconds to run, this function can run for very long
        because of the overhead of looping so many times."
   [f ^long run-ms]

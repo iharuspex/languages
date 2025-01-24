@@ -58,10 +58,15 @@ public class Benchmark {
    * Runs `f` repeatedly measuring the time delta in nanoseconds.
    * Stops when the sum of the deltas is larger than `runMs`.
    * Returns a record with stats and result.
+   * runMs: 0 => don't run, 1 => this is a check-output run
    * NB: If `f` takes sub-milliseconds to run, this function can run for very long
    * because of the overhead of looping so many times.
    */
   public static <T> BenchmarkResult<T> run(Supplier<T> f, long runMs) {
+    if (runMs == 0) {
+      return null;
+    }
+    
     long runNs = runMs * 1_000_000;
     List<TimedResult<T>> results = new ArrayList<>();
     long totalElapsedTime = 0;
