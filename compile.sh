@@ -56,7 +56,7 @@ compile 'Clojure' 'clojure' '(cd clojure && mkdir -p classes && clojure -M -e "(
 compile 'Clojure Native' 'clojure-native-image' "(cd clojure-native-image ; clojure -M:native-image-run --pgo-instrument -march=native) ; ./clojure-native-image/run -XX:ProfilesDumpFile=clojure-native-image/run.iprof 10000 2000 $(./check-output.sh -i) && (cd clojure-native-image ; clojure -M:native-image-run --pgo=run.iprof -march=native)"
 compile 'Java' 'jvm' 'javac -cp ../lib/java jvm/run.java'
 compile 'Java Native' 'java-native-image' "(cd java-native-image ; native-image -cp ..:../../lib/java --no-fallback -O3 --pgo-instrument -march=native jvm.run) && ./java-native-image/jvm.run -XX:ProfilesDumpFile=java-native-image/run.iprof 10000 2000 $(./check-output.sh -i) && (cd java-native-image ; native-image -cp ..:../../lib/java -O3 --pgo=run.iprof -march=native jvm.run -o run)"
-compile 'Fortran' 'fortran' 'gfortran -O3 -I../lib/fortran ../lib/fortran/benchmark.f90 fortran/run.f90 -o fortran/run'
+compile 'Fortran' 'fortran' "gfortran -O3 -J../lib/fortran ../lib/fortran/benchmark.f90 fortran/run.f90 -o fortran/run"
 
 ####### END The languages
 
