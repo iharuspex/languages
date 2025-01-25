@@ -154,6 +154,7 @@ run "Babashka" "bb/run.clj" "bb bb/run.clj"
 run "C" "./c/run" "./c/run"
 run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
 run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
+run "Fortran" "./fortran/run" "./fortran/run"
 run "Java" "./jvm/run.class" "java -cp .:../lib/java jvm.run"
 run "Java Native" "./java-native-image/run" "./java-native-image/run"
 ####### END The languages
