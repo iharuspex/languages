@@ -7,7 +7,7 @@ program main
    character(len = :), allocatable :: args(:)
    integer, allocatable :: distances(:)
    type(benchmark_result_t) :: warmup_result, benchmark_result
-   character(len = 256) :: result_str
+   character(len = :), allocatable :: result_str
 
    call get_command_argument(1, run_ms_str)
    call get_command_argument(2, warmup_ms_str)
@@ -26,7 +26,7 @@ program main
    benchmark_result%result = sum(distances)
 
    call format_results(benchmark_result, result_str)
-   write(*, '(A)') result_str
+   write(*, '(A)') trim(adjustl(result_str))
 
    deallocate(args, distances)
 

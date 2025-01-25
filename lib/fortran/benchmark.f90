@@ -49,8 +49,8 @@ contains
     call system_clock(last_status_t)
 
     if (print_status) then
-      write(*, '(A)', advance='no') "."
-      flush(6)
+      write(0, '(A)', advance='no') "."
+      flush(0)
     end if
 
     do while (total_elapsed_time < run_ms * 1.0e6)
@@ -65,13 +65,13 @@ contains
       if (elapsed_times(count) > max_time) max_time = elapsed_times(count)
       if (print_status .and. (end_time - last_status_t) > 1000000000) then
         last_status_t = end_time
-        write(*, '(A)', advance='no') "."
-        flush(6)
+        write(0, '(A)', advance='no') "."
+        flush(0)
       end if
     end do
 
     if (print_status) then
-      write(*, '(A)') ""
+      write(0, '(A)') ""
     end if
 
     mean = sum(elapsed_times(1:count)) / count
@@ -86,11 +86,15 @@ contains
   end subroutine run
 
   subroutine format_results(benchmark_result, result_str)
-    implicit none
-    type(benchmark_result_t), intent(in) :: benchmark_result
-    character(len=256), intent(out) :: result_str
-    write(result_str, '(f6.3,1x,f6.3,1x,f6.3,1x,f6.3,1x,i0,1x,i8)') &
-      benchmark_result%mean_ms, benchmark_result%std_dev_ms, benchmark_result%min_ms, benchmark_result%max_ms, benchmark_result%runs, benchmark_result%result
+      implicit none
+      type(benchmark_result_t), intent(in) :: benchmark_result
+      character(len=:), allocatable, intent(out) :: result_str
+      character(len=256) :: temp_str
+
+      write(temp_str, '(f0.6,",",f0.6,",",f0.6,",",f0.6,",",i0,",",i0)') &
+        benchmark_result%mean_ms, benchmark_result%std_dev_ms, benchmark_result%min_ms, benchmark_result%max_ms, benchmark_result%runs, benchmark_result%result
+
+      result_str = trim(adjustl(temp_str))
   end subroutine format_results
 
 end module benchmark
