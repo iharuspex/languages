@@ -26,12 +26,32 @@ contains
     integer(8) :: start_time, end_time, elapsed_time, total_elapsed_time
     integer :: count
     real(8) :: elapsed_times(1000), mean, variance, std_dev, min_time, max_time
+    logical :: print_status
+    integer(8) :: last_status_t
+
+    ! Check for run_ms being zero
+    if (run_ms == 0) then
+      result%runs = 0
+      result%mean_ms = 0.0
+      result%std_dev_ms = 0.0
+      result%min_ms = 0.0
+      result%max_ms = 0.0
+      result%result = 0
+      return
+    end if
 
     func_ptr => f
     total_elapsed_time = 0
     count = 0
     min_time = 1.0e12
     max_time = 0.0
+    print_status = (run_ms > 1)
+    call system_clock(last_status_t)
+
+    if (print_status) then
+      write(*, '(A)', advance='no') "."
+      flush(6)
+    end if
 
     do while (total_elapsed_time < run_ms * 1.0e6)
       call system_clock(start_time)
@@ -43,7 +63,16 @@ contains
       count = count + 1
       if (elapsed_times(count) < min_time) min_time = elapsed_times(count)
       if (elapsed_times(count) > max_time) max_time = elapsed_times(count)
+      if (print_status .and. (end_time - last_status_t) > 1000000000) then
+        last_status_t = end_time
+        write(*, '(A)', advance='no') "."
+        flush(6)
+      end if
     end do
+
+    if (print_status) then
+      write(*, '(A)') ""
+    end if
 
     mean = sum(elapsed_times(1:count)) / count
     variance = sum((elapsed_times(1:count) - mean)**2) / count
