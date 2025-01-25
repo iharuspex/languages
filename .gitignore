@@ -34,3 +34,15 @@ Cargo.lock
 levenshtein.mod
 */racket/compiled/
 *.zo
+*/clojure-native-image/run
+*/java-native-image/jvm.run
+*/java-native-image/run
+loops/*/code
+loops/*/run
+fibonacci/*/code
+fibonacci/*/run
+levenshtein/*/code
+levenshtein/*/run
+hello-world/*/code
+hello-world/*/run
+.nrepl-port

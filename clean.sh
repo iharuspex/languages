@@ -1,11 +1,9 @@
 rm c3/code
-rm c/code
+rm c/{code,run}
 rm cpp/code
 rm go/code
-rm jvm/*.class
-rm java-native-image/code
-rm java-native-image/jvm.code
-rm java-native-image/default.iprof
+rm -rf jvm/{*.class,*.iprof}
+rm -rf java-native-image/{jvm.run,run,code,jvm.code,*.iprof}
 rm scala/code scala/code-native
 rm -r rust/target
 rm -rf kotlin/code.jar
@@ -40,7 +38,7 @@ rm hare/code
 rm v/code
 rm emojicode/code emojicode/code.o
 rm -f chez/code.so
-rm -rf clojure/classes clojure/.cpcache
-rm -rf clojure-native-image/classes clojure-native-image/.cpcache clojure-native-image/code
+rm -rf clojure/{classes,.cpcache,*.class}
+rm -rf clojure-native-image/{classes,code,run,*.iprof}
 rm cobol/main
 rm emacs-lisp/code.eln emacs-lisp/code.elc
