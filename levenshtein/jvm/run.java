@@ -90,10 +90,11 @@ public class run {
      */
     public static void main(String[] args) throws Exception {
         int runMs = Integer.parseInt(args[0]);
-        String inputPath = args[1];
+        int warmupMS = Integer.parseInt(args[1]);
+        String inputPath = args[2];
         String content = Files.readString(Paths.get(inputPath));
         List<String> strings = Arrays.asList(content.split("\n\r?"));
-        var _warmup = Benchmark.run(() -> levenshteinDistances(strings), runMs);
+        Benchmark.run(() -> levenshteinDistances(strings), warmupMS);
         var results = Benchmark.run(() -> levenshteinDistances(strings), runMs);
         var summedResults = results.withResult(results.result().stream()
                 .mapToLong(Long::longValue)

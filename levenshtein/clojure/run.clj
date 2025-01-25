@@ -45,10 +45,11 @@
 
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
-        input-path (second args)
+        warmup-ms (parse-long (second args))
+        input-path (nth args 2)
         strings (-> (slurp input-path)
                     (string/split-lines))
-        _warmup (benchmark/run #(levenshtein-distances strings) run-ms)
+        _warmup (benchmark/run #(levenshtein-distances strings) warmup-ms)
         results (benchmark/run #(levenshtein-distances strings) run-ms)]
     (-> results
         (update :result (partial reduce +))

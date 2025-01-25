@@ -35,8 +35,9 @@
        (levenshtein-distance (nth words i) (nth words j))))))
 
 (when (= *file* (System/getProperty "babashka.file"))
-  (let [run-ms (parse-long (first *command-line-args*)) 
-        input-path (second *command-line-args*)
+  (let [run-ms (parse-long (first *command-line-args*))
+        ; skip warmup arg, because we skip warmups
+        input-path (nth *command-line-args* 2)
         strings (-> (slurp input-path)
                     (string/split-lines))
         results (benchmark/run #(levenshtein-distances strings) run-ms)]

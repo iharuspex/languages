@@ -154,36 +154,28 @@ static benchmark_result_t work(void* data) {
 }
 
 int main(int argc, char* argv[]) {
-  if (argc != 3) {
-    fprintf(stderr, "Usage: %s <run_ms> <input_file>\n", argv[0]);
+  if (argc != 4) {
+    fprintf(stderr, "Usage: %s <run_ms> <warmup_ms> <input_file>\n", argv[0]);
     return 1;
   }
 
   int run_ms = atoi(argv[1]);
+  int warmup_ms = atoi(argv[2]);
   int word_count;
-  char** words = read_words(argv[2], &word_count);
+  char** words = read_words(argv[3], &word_count);
 
   word_data_t data = {words, word_count};
 
-  // Warmup
-  benchmark_stats_t warmup = benchmark_run(work, &data, run_ms);
-  distances_result_t* warmup_distances =
-      (distances_result_t*)warmup.last_result.value.ptr;
-  free(warmup_distances->distances);
-  free(warmup_distances);
+  benchmark_run(work, &data, warmup_ms);
 
-  // Actual benchmark
   benchmark_stats_t stats = benchmark_run(work, &data, run_ms);
-
   // Sum the distances outside the benchmarked function
   distances_result_t* distances =
       (distances_result_t*)stats.last_result.value.ptr;
-
   long sum = 0;
   for (int i = 0; i < distances->count; i++) {
     sum += distances->distances[i];
   }
-
   stats.last_result.value.number = sum;
 
   char buffer[1024];
