@@ -57,6 +57,6 @@
         println)))
 
 (comment
-  (-main "1000" "levenshtein/levenshtein-words.txt")
+  (-main "2000" "1000" "levenshtein-words.txt")
   :rcf)
 
