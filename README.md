@@ -119,13 +119,14 @@ To add (or port) a language for a benchmark to the new runner you'll need to add
 1. Maybe some code in `clean.sh` (All temporary/build files should be cleaned.)
 1. Maybe some entries in `.gitignore` (All build files, and temporary toolchain files should be added here.)
 
-The `main` function of the program provided should take two arguments:
+The `main` function of the program provided should take three arguments:
 
 1. The run time in milliseconds
+1. The warmup time in milliseconds
 1. The input to the function
    - There is only one input argument, unlike before. How this input argument should be interpreted depends on the benchmark. For **levenshtein** it is a file path, to the file containing the words to use for the test.
 
-As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to use an equal amount of time as the run time for warmup, so that any JIT compilers will have had some chance to optimize.
+As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to run warmup runs before the actual benchmark run. E.g. so that a JIT compiler will have had some chance to optimize. It should then pass the warmup time to its benchmark runner. 
 
 The program should output a csv row with:
 
@@ -137,7 +138,7 @@ Before a PR with a new or ported language contribution will be merged, you shoul
 
 ```sh
 $ ../compile.sh -l 'C,Clojure'
-$ ../run.sh -l 'C,Clojure'
+$ ../run.sh -u PEZ -l 'C,Clojure'
 ```
 
 Please provide output from all benchmark contributions you have added/touched.
@@ -153,6 +154,7 @@ When adapting a language implementation of some benchmark, consider these differ
 * **loops**: The inner loop is now 10k, again to allow slower languages to complete more runs.
 * **levenshtein**:
   1. Smaller input (slower languages...)
+  1. The input is provided via a file (pointed at by the input argument)
   1. We only calculate each word pairing distance once (A is as far from B as B is from A)
   1. There is a single result, the sum of the distances.
 * **hello-world**: No changes.
@@ -163,10 +165,11 @@ Let's look at the `-main` function for the Clojure **levenshtein** contribution:
 ```clojure
 (defn -main [& args]
   (let [run-ms (parse-long (first args))
-        input-path (second args)
+        warmup-ms (parse-long (second args))
+        input-path (nth args 2)
         strings (-> (slurp input-path)
-                    (string/split #"\s+"))
-        _warmup (benchmark/run #(levenshtein-distances strings) run-ms)
+                    (string/split-lines))
+        _warmup (benchmark/run #(levenshtein-distances strings) warmup-ms)
         results (benchmark/run #(levenshtein-distances strings) run-ms)]
     (-> results
         (update :result (partial reduce +))
