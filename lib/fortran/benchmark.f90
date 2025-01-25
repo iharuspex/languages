@@ -24,8 +24,9 @@ contains
     integer, intent(in) :: run_ms
     type(benchmark_result_t), intent(out) :: result
     integer(8) :: start_time, end_time, elapsed_time, total_elapsed_time
+    integer(8) :: count_rate
     integer :: count
-    real(8) :: elapsed_times(1000), mean, variance, std_dev, min_time, max_time
+    real(8) :: elapsed_times(1000000), mean, variance, std_dev, min_time, max_time
     logical :: print_status
     integer(8) :: last_status_t
 
@@ -46,7 +47,7 @@ contains
     min_time = 1.0e12
     max_time = 0.0
     print_status = (run_ms > 1)
-    call system_clock(last_status_t)
+    call system_clock(count_rate=count_rate)  ! Get the count rate
 
     if (print_status) then
       write(0, '(A)', advance='no') "."
@@ -54,16 +55,22 @@ contains
     end if
 
     do while (total_elapsed_time < run_ms * 1.0e6)
-      call system_clock(start_time)
+      call system_clock(start_time, count_rate=count_rate)  ! Use nanosecond precision
       result%result = func_ptr()
-      call system_clock(end_time)
+      call system_clock(end_time, count_rate=count_rate)    ! Use nanosecond precision
       elapsed_time = end_time - start_time
-      elapsed_times(count + 1) = elapsed_time / 1.0e6
+      if (elapsed_time == 0) cycle  ! Skip zero elapsed time measurements
+      if (count < size(elapsed_times)) then
+        elapsed_times(count + 1) = elapsed_time / 1.0e6
+      else
+        write(0,*) "Error: Exceeded maximum number of iterations"
+        exit
+      end if
       total_elapsed_time = total_elapsed_time + elapsed_time
       count = count + 1
       if (elapsed_times(count) < min_time) min_time = elapsed_times(count)
       if (elapsed_times(count) > max_time) max_time = elapsed_times(count)
-      if (print_status .and. (end_time - last_status_t) > 1000000000) then
+      if (print_status .and. (end_time - last_status_t) > count_rate) then
         last_status_t = end_time
         write(0, '(A)', advance='no') "."
         flush(0)
