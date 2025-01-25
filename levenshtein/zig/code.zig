@@ -3,18 +3,26 @@ const std = @import("std");
 /// Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm
 /// Space Complexity: O(min(m,n)) - only uses two arrays instead of full matrix
 /// Time Complexity: O(m*n) where m and n are the lengths of the input strings
-fn levenshteinDistance(s1: []const u8, s2: []const u8, prev_row: []usize, curr_row: []usize) usize {
+fn levenshteinDistance(s1: *const []const u8, s2: *const []const u8, buffer: *const []usize) usize {
     // Early termination checks
-    if (std.mem.eql(u8, s1, s2)) return 0;
-    if (s1.len == 0) return s2.len;
-    if (s2.len == 0) return s1.len;
+    if (std.mem.eql(u8, s1.*, s2.*)) return 0;
+    if (s1.*.len == 0) return s2.*.len;
+    if (s2.*.len == 0) return s1.*.len;
 
     // Make s1 the shorter string for space optimization
-    const str1 = if (s1.len > s2.len) s2 else s1;
-    const str2 = if (s1.len > s2.len) s1 else s2;
+    const str1, const str2 = init: {
+        if (s1.*.len > s2.*.len) {
+            break :init .{ s2.*, s1.* };
+        }
+
+        break :init .{ s1.*, s2.* };
+    };
 
     const m = str1.len;
     const n = str2.len;
+
+    var prev_row = buffer.*[0..(m + 1)];
+    var curr_row = buffer.*[(m + 1)..];
 
     // Initialize first row
     for (0..m + 1) |i| {
@@ -22,23 +30,22 @@ fn levenshteinDistance(s1: []const u8, s2: []const u8, prev_row: []usize, curr_r
     }
 
     // Main computation loop
+    for (str2, 0..n) |ch2, j| {
+        curr_row[0] = j + 1;
 
-    for (1..(n + 1)) |j| {
-        curr_row[0] = j;
-
-        for (1..(m + 1)) |i| {
-            const cost: usize = if (str1[i - 1] == str2[j - 1]) 0 else 1;
+        for (str1, 0..m) |ch1, i| {
+            const cost: usize = @intFromBool(ch1 != ch2);
 
             // Calculate minimum of three operations
-            curr_row[i] = @min(
-                prev_row[i] + 1, // deletion
-                curr_row[i - 1] + 1, // insertion
-                prev_row[i - 1] + cost // substitution
+            curr_row[i + 1] = @min(
+                prev_row[i + 1] + 1, // deletion
+                curr_row[i] + 1, // insertion
+                prev_row[i] + cost, // substitution
             );
         }
 
         // Swap rows
-        @memcpy(prev_row[0 .. m + 1], curr_row[0 .. m + 1]);
+        std.mem.swap([]usize, &prev_row, &curr_row);
     }
 
     return prev_row[m];
@@ -49,38 +56,40 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    const args = try std.process.argsAlloc(allocator);
+    const args_cli = try std.process.argsAlloc(allocator);
 
-    if (args.len < 3) {
+    if (args_cli.len < 3) {
         const stderr = std.io.getStdErr().writer();
         try stderr.writeAll("Please provide at least two strings as arguments.\n");
         std.process.exit(1);
     }
 
-    // Calculate length of longest input string
-    const input_lengths = try allocator.alloc(usize, args.len);
-    for (0..input_lengths.len) |i| input_lengths[i] = args[i].len;
+    const args = args_cli[1..];
 
-    const max_inp_len = std.mem.max(usize, input_lengths);
+    // Calculate length of longest input string
+    var max_inp_len: usize = 0;
+
+    for (args) |argument| {
+        max_inp_len = @max(max_inp_len, argument.len);
+    }
 
     // Reuse prev and curr row to minimize allocations
-    const prev_row = try allocator.alloc(usize, max_inp_len);
-    const curr_row = try allocator.alloc(usize, max_inp_len);
+    const buffer = try allocator.alloc(usize, (max_inp_len + 1) * 2);
 
-    var min_distance: isize = -1;
+    var min_distance: usize = std.math.maxInt(usize);
     var times: usize = 0;
 
     // Compare all pairs of strings
-
-    for (1..args.len) |i| {
-        for (1..args.len) |j| {
-            if (i != j) {
-                const distance = levenshteinDistance(args[i], args[j], prev_row, curr_row);
-                if (min_distance == -1 or distance < @as(usize, @intCast(min_distance))) {
-                    min_distance = @as(isize, @intCast(distance));
-                }
-                times += 1;
+    for (args, 0..args.len) |argA, i| {
+        for (args, 0..args.len) |argB, j| {
+            if (i == j) {
+                continue;
             }
+
+            const distance = levenshteinDistance(&argA, &argB, &buffer);
+            min_distance = @min(min_distance, distance);
+
+            times += 1;
         }
     }
 
