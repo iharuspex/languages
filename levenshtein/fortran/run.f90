@@ -81,32 +81,6 @@ program main
       close(unit)
    end subroutine read_all_words
 
-   subroutine split(string, delimiter, parts)
-      character(len = *), intent(in) :: string
-      character(len = *), intent(in) :: delimiter
-      character(len = *), intent(out) :: parts(:)
-      integer :: i, start, finish, p
-      start = 1
-      p = 1
-      do i = 1, len(string)
-         if (string(i:i) == delimiter) then
-            finish = i - 1
-            if (finish < start) then
-               parts(p) = ''
-            else
-               parts(p) = string(start:finish)
-            end if
-            p = p + 1
-            start = i + 1
-         end if
-      end do
-      if (start <= len(string)) then
-         parts(p) = string(start:)
-      else
-         parts(p) = ''
-      end if
-   end subroutine split
-
    ! Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm
    ! Space Complexity: O(min(m,n)) - only uses two arrays instead of full matrix
    ! Time Complexity: O(m*n) where m and n are the lengths of the input strings
