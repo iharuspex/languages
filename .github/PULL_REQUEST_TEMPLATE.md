@@ -2,7 +2,7 @@
 
 I have:
 
-* [ ] Read the project [README](../README.md), including the [benchmark descriptions](../README.md#available-benchmarks)
+* [ ] Read the project [README](../../blob/main/README.md), including the [benchmark descriptions](../../blob/main/README.md#available-benchmarks)
 * [ ] Read the PR template instructions before I deleted them
 * [ ] Understood that if I have changed something that could impact performance of one or more contributions, I should provide results benchmark runs, using the `run.sh` script, from before and after the change.
 
