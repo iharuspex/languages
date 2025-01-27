@@ -21,7 +21,7 @@ rm d/code
 rm odin/code
 rm objc/code
 rm fortran/code
-rm zig/code
+rm -rf zig/{code,code.o} zig/{.zig-cache,zig-out}
 rm lua/code
 rm -f swift/code
 rm haxe/code.jar
