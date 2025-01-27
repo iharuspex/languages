@@ -98,7 +98,7 @@ pub fn createContext(comptime benchmark_fn: anytype) type {
                 const time_end = nanoTimestamp();
 
                 // print status dots every second if it isn't a check-output run
-                if (run_ms > 1 and time_end - last_time > 1_000_000_000) {
+                if (run_ms > 1 and time_start - last_time > 1_000_000_000) {
                     last_time = time_end;
                     try stderr.writeAll(".");
                 }
