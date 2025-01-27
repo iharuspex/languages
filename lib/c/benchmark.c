@@ -67,7 +67,7 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
     last_result = fn(data);
     int64_t t1 = get_time_ns();
     // Don't print status dots if it is a check-output run
-    if (run_ms > 1 && t1 - last_status_t > 1000000000) {
+    if (run_ms > 1 && t0 - last_status_t > 1000000000) {
       last_status_t = t1;
       fprintf(stderr, ".");
       fflush(stderr);

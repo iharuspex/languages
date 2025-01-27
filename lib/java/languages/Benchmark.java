@@ -80,13 +80,13 @@ public class Benchmark {
       long t0 = System.nanoTime();
       T result = f.get();
       long t1 = System.nanoTime();
+      long elapsedTime = t1 - t0;
       // Only print status dot if not check-output run
-      if (runMs > 1 && t1 - lastStatusT > 1_000_000_000) {
+      if (runMs > 1 && t0 - lastStatusT > 1_000_000_000) {
         lastStatusT = t1;
         System.err.print(".");
         System.err.flush();
       }
-      long elapsedTime = t1 - t0;
       totalElapsedTime += elapsedTime;
       results.add(new TimedResult<>(totalElapsedTime, elapsedTime, result));
     }
