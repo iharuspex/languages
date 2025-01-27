@@ -48,6 +48,7 @@ contains
     max_time = 0.0
     print_status = (run_ms > 1)
     call system_clock(count_rate=count_rate)  ! Get the count rate
+    last_status_t = 0
 
     if (print_status) then
       write(0, '(A)', advance='no') "."
@@ -55,6 +56,11 @@ contains
     end if
 
     do while (total_elapsed_time < run_ms * 1.0e6)
+      if (print_status .and. (total_elapsed_time - last_status_t) > 1.0e9) then
+        last_status_t = total_elapsed_time
+        write(0, '(A)', advance='no') "."
+        flush(0)
+      end if
       call system_clock(start_time, count_rate=count_rate)  ! Use nanosecond precision
       result%result = func_ptr()
       call system_clock(end_time, count_rate=count_rate)    ! Use nanosecond precision
@@ -70,11 +76,6 @@ contains
       count = count + 1
       if (elapsed_times(count) < min_time) min_time = elapsed_times(count)
       if (elapsed_times(count) > max_time) max_time = elapsed_times(count)
-      if (print_status .and. (end_time - last_status_t) > count_rate) then
-        last_status_t = end_time
-        write(0, '(A)', advance='no') "."
-        flush(0)
-      end if
     end do
 
     if (print_status) then
