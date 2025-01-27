@@ -43,7 +43,7 @@
                          total-elapsed-time (+ last-tet elapsed-time)
                          timed-result [total-elapsed-time elapsed-time result]
                          print-status? (and (> run-ms 1) ; Not if check-output run
-                                            (> (- t1 last-status-t) 1000000000))]
+                                            (> (- t0 last-status-t) 1000000000))]
                      (when print-status? (print ".") (flush))
                      (if (< total-elapsed-time run-ns)
                        (recur (conj results timed-result) total-elapsed-time (if print-status?
