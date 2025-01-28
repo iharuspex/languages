@@ -117,6 +117,7 @@ To add (or port) a language for a benchmark to the new runner you'll need to add
 1. A benchmarking utility in `lib/<language>`
 1. Code in `<benchmark>/<language>/run.<language-extension>` (plus whatever extra project files)
    - If you are porting from the legacy runner, copy the corresponding `code.<language-extension>` and start from there. See about [benchmark changes](#changes-to-the-benchmarks-compared-to-legacy-runner) below.
+   - To make compare and review of the benched function easier, please split it out in its own module, e.g. [fibonacci/zig/fibonacci.zig](fibonacci/zig/fibonacci.zig). The Zig contributions are currently the best examples to follow here.
 1. An entry in `compile.sh` (copy from `compile-legacy.sh` if you are porting)
 1. An entry in `run.sh` (copy from `compile-legacy.sh` if you are porting)
 1. Maybe some code in `clean.sh` (All temporary/build files should be cleaned.)
