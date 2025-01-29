@@ -1,5 +1,6 @@
 program main
     use benchmark
+    use fibonacci_module
     implicit none
     integer(8) :: n
     integer(4) :: run_ms, warmup_ms
@@ -29,17 +30,5 @@ contains
         result = fibonacci(n)
         fibonacci_benchmark = result
     end function fibonacci_benchmark
-
-    integer(8) recursive function fibonacci(n) result(f)
-        integer(8), intent(in) :: n
-
-        if (n == 0) then
-            f = 0
-        elseif (n == 1) then
-            f = 1
-        else
-            f = fibonacci(n - 1) + fibonacci(n - 2)
-        end if
-    end function fibonacci
 
 end program main

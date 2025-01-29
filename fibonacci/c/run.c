@@ -7,11 +7,7 @@
 #include "stdint.h"
 #include "stdio.h"
 #include "stdlib.h"
-
-int32_t fibonacci(int32_t n) {
-  if (n < 2) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
+#include "fibonacci.h" 
 
 // The work function that benchmark will time
 static benchmark_result_t work(void* data) {
