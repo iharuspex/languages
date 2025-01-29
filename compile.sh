@@ -57,7 +57,7 @@ compile 'Clojure Native' 'clojure-native-image' "(cd clojure-native-image ; cloj
 compile 'C++' 'cpp' 'g++ -march=native -std=c++23 -O3 -Ofast -I../lib/cpp cpp/run.cpp -o cpp/run'
 compile 'Java' 'jvm' 'javac -cp ../lib/java jvm/*.java'
 compile 'Java Native' 'java-native-image' "(cd java-native-image ; native-image -cp ..:../../lib/java --no-fallback -O3 --pgo-instrument -march=native jvm.run) && ./java-native-image/jvm.run -XX:ProfilesDumpFile=java-native-image/run.iprof 10000 2000 $(./check-output.sh -i) && (cd java-native-image ; native-image -cp ..:../../lib/java -O3 --pgo=run.iprof -march=native jvm.run -o run)"
-compile 'Fortran' 'fortran' "gfortran -O3 -J../lib/fortran ../lib/fortran/benchmark.f90 fortran/run.f90 -o fortran/run"
+compile 'Fortran' 'fortran' "gfortran -O3 -J../lib/fortran ../lib/fortran/benchmark.f90 fortran/*.f90 -o fortran/run"
 compile 'Zig' 'zig' 'zig build --build-file zig/build.zig --prefix ${PWD}/zig/zig-out --cache-dir ${PWD}/zig/.zig-cache --release=fast'
 
 ####### END The languages
