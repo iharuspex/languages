@@ -38,7 +38,7 @@ compile 'scala' 'bun build --bytecode --compile scala/code.js --outfile scala/bu
 compile 'ldc2' 'ldc2 -O3 -release -boundscheck=off -mcpu=native flto=thin d/code.d'
 compile 'odin' 'odin build odin/code.odin -o:speed -file -out:odin/code'
 compile 'objc' 'clang -O3 -framework Foundation objc/code.m -o objc/code'
-compile 'fortran' 'gfortran -O3 fortran/code.f90 -o fortran/code'
+compile 'fortran' 'gfortran -O3 fortran/legacy/code.f90 -o fortran/code'
 compile 'zig' 'zig build-exe -O ReleaseFast -femit-bin=zig/code zig/code.zig'
 compile 'lua' 'luajit -b lua/code.lua lua/code'
 compile 'swift' 'swiftc -O -parse-as-library -Xcc -funroll-loops -Xcc -march=native -Xcc -ftree-vectorize -Xcc -ffast-math swift/code.swift -o swift/code'
