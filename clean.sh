@@ -5,7 +5,7 @@ rm go/code
 rm -rf jvm/{*.class,*.iprof}
 rm -rf java-native-image/{jvm.run,run,code,jvm.code,*.iprof}
 rm scala/code scala/code-native
-rm -r rust/target
+rm -rf rust/{Cargo.lock,target} ../lib/rust/{Cargo.lock,target}
 rm -rf kotlin/code.jar
 rm kotlin/code.kexe
 rm dart/code
