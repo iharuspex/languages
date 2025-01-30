@@ -15,7 +15,7 @@ rm js/bun
 rm common-lisp/code
 rm fpc/code
 rm modula2/code
-rm crystal/code
+rm crystal/{code,run}
 rm ada/code ada/code.ali ada/code.o
 rm d/code
 rm odin/code
