@@ -10,11 +10,11 @@ module Enumerable
     end
 end
 
-def bench(run_ms : Int32, &fn)
+def bench(data, run_ms : Int32, &fn)
 	times = Array(Int32).new
 	result = 0
 	while(times.sum < run_ms)
-		a = Time.measure {result = yield}
+		a = Time.measure {result = yield data}
 		times << a.milliseconds
 		# puts times
 	end
