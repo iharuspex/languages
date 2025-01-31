@@ -1,11 +1,17 @@
-use num::{traits::bounds::UpperBounded, Integer, NumCast, Unsigned};
+use num::{traits::bounds::UpperBounded, FromPrimitive, Integer, ToPrimitive, Unsigned};
 
-// Define alias for Trait Bounds until official Trait Aliases are no longer experimental.
-// https://github.com/rust-lang/rust/issues/41517
-// https://github.com/rust-lang/rfcs/issues/3528#issuecomment-1807738102
-// https://github.com/rust-lang/rfcs/pull/1733#issuecomment-243840014
-pub trait CostInteger: Unsigned + Integer + NumCast + Copy + UpperBounded + From<bool> {}
-impl<T: Unsigned + Integer + NumCast + Copy + UpperBounded + From<bool>> CostInteger for T {}
+/// Define alias for Trait Bounds until official Trait Aliases are no longer experimental.
+///   - see https://github.com/rust-lang/rust/issues/41517
+///   - see https://github.com/rust-lang/rfcs/issues/3528#issuecomment-1807738102
+///   - see https://github.com/rust-lang/rfcs/pull/1733#issuecomment-243840014
+pub trait CostInteger:
+    Unsigned + Integer + Copy + UpperBounded + FromPrimitive + ToPrimitive + From<bool>
+{
+}
+impl<T: Unsigned + Integer + Copy + UpperBounded + FromPrimitive + ToPrimitive + From<bool>>
+    CostInteger for T
+{
+}
 
 /// Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm.
 ///
@@ -44,12 +50,12 @@ pub fn levenshtein_distance<T: CostInteger>(
 
     // Initialize the previous row
     for (i, v) in prev_row.iter_mut().enumerate() {
-        *v = <T as num::NumCast>::from(i).expect("init number");
+        *v = T::from_usize(i).expect("init number");
     }
 
     // main computation loop
     for (j, ch2) in s2.iter().enumerate() {
-        curr_row[0] = <T as num::NumCast>::from(j + 1).expect("first element");
+        curr_row[0] = T::from_usize(j + 1).expect("first element");
 
         for (i, ch1) in s1.iter().enumerate() {
             let cost: T = (ch1 != ch2).into();
