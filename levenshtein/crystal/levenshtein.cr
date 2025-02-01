@@ -4,9 +4,9 @@ def levenshtein(strings : Array(String)) : Array(Int32)
 	buf1 = Array(Int32).new(max_len+1, 0)
 	buf2 = Array(Int32).new(max_len+1, 0)
 
-	strings.each_combination(2).map do |pair|
+	strings.each_combination(2).map { |pair|
 		levenshtein_distance(pair[0], pair[1], buf1, buf2)
-	end
+	}.to_a
 end
 
 def levenshtein_distance(s1 : String, s2 : String, buf1 : Array(Int32), buf2 : Array(Int32)) : Int32
