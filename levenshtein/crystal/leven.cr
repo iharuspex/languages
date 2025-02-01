@@ -1,10 +1,10 @@
-def levenshtein(strings : Array(String))
+def levenshtein(strings : Array(String)) : Array(Int32)
 	# stolen from zig - reuse bufs
 	max_len = strings.map(&.size).max
 	buf1 = Array(Int32).new(max_len+1, 0)
 	buf2 = Array(Int32).new(max_len+1, 0)
 
-	strings.each_combination(2).sum do |pair|
+	strings.each_combination(2).map do |pair|
 		levenshtein_distance(pair[0], pair[1], buf1, buf2)
 	end
 end
