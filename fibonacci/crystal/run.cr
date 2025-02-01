@@ -1,4 +1,4 @@
-require "./fib.cr"
+require "./fibonacci.cr"
 require "../../lib/crystal/benchmark.cr"
 
 run_t = ARGV[0].to_i
