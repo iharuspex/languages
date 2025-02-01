@@ -173,10 +173,11 @@ for benchmark in "${available_benchmarks[@]}"; do
   fi
 done
 
-if [ "${benchmark_found}" = true ]; then
+if [ "${benchmark_found}" = true ]; then # regular, single, benchmark run
   benchmarks_to_run=("${PWD}")
-else
+else                                     # run all benchmarks
   for benchmark in "${available_benchmarks[@]}"; do
+    unset override_input_value # Custom input arg doesn't work for this run type
     if [ -d "${PWD}/${benchmark}" ]; then
       benchmarks_to_run+=("${PWD}/${benchmark}")
     fi
