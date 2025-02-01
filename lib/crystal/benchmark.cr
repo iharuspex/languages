@@ -13,10 +13,18 @@ end
 def bench(run_ms : Int32, &fn)
 	times = Array(Int32).new
 	result = 0
+	secs = 0
+	
 	while(times.sum < run_ms && !(times.sum == 0 && times.size > 0))
 		a = Time.measure {result = yield}
 		times << a.milliseconds
+
+		if (times.sum / 1000).round > secs
+			STDERR.print '.'
+			secs += 1
+		end
 	end
+	STDERR.puts
 
 	{times: times, result: result}
 end
