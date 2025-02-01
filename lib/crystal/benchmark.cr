@@ -10,7 +10,7 @@ module Enumerable
     end
 end
 
-def bench(run_ms : Int32, &fn)
+def bench(run_ms : Int32, warmup? : Bool = false, &fn)
 	times = Array(Int32).new
 	result = 0
 	while(times.sum < run_ms && !(times.sum == 0 && times.size > 0))
@@ -19,5 +19,7 @@ def bench(run_ms : Int32, &fn)
 	end
 
 	# mean_ms,std-dev-ms,min_ms,max_ms,times,result
-	puts "#{times.sum / times.size},#{times.std_dev},#{times.min},#{times.max},#{times.size},#{result}"		unless times.empty?
+	unless times.empty? || warmup?
+		puts "#{times.sum / times.size},#{times.std_dev},#{times.min},#{times.max},#{times.size},#{result}"
+	end
 end
