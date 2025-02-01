@@ -10,8 +10,6 @@ warmup_ms=2000
 cmd_input="$(./check-output.sh -i)"
 user="JDoe"
 only_langs=false
-use_hyperfine=false
-[[ "$benchmark" == "hello-world" ]] && use_hyperfine=true
 
 while getopts "cst:w:u:l:h" opt; do
   case $opt in
@@ -121,6 +119,9 @@ function run {
       return
     fi
   fi
+
+  use_hyperfine=false
+  [[ "$benchmark" == "hello-world" ]] && use_hyperfine=true
 
   local result
   echo
