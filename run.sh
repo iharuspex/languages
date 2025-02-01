@@ -5,7 +5,6 @@ check_only=false
 skip_check=false
 run_ms=10000
 warmup_ms=2000
-cmd_input="$(./check-output.sh -i)"
 user="JDoe"
 only_langs=false
 
@@ -33,10 +32,8 @@ if [ "$skip_check" = true ]; then
   is_checked=false
 fi
 user=${user//,/_}
-input_value="${1}"
-if [ -n "${input_value}" ]; then
-    cmd_input="${input_value}"
-fi
+
+override_input_value="${1}"
 
 commit_sha=$(git rev-parse --short HEAD)
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -73,6 +70,7 @@ function check {
   if [ ${skip_check} = false ]; then
     echo "Checking ${benchmark} ${language_name}"
     command_line="${partial_command} 1 0 ${input_arg}"
+    echo ${command_line}
     program_output=$(${command_line})
     if ! ./check-output.sh "${program_output}"; then
       echo "Check failed for ${benchmark} ${language_name}."
@@ -105,6 +103,10 @@ function run {
 
   use_hyperfine=false
   [[ "$benchmark" == "hello-world" ]] && use_hyperfine=true
+  cmd_input="$(./check-output.sh -i)"
+  if [ -n "${input_value}" ]; then
+    cmd_input="${input_value}"
+  fi
 
   local result
   echo
@@ -132,12 +134,14 @@ function run {
 }
 
 function run_benchmark {
-  local benchmark=${1}
+  local benchmark_dir=${1}
+  local benchmark=$(basename ${benchmark_dir})
+  cd "${benchmark_dir}" || return
 
-  benchmark_dir="/tmp/languages-benchmark"
-  mkdir -p "${benchmark_dir}"
+  results_dir="/tmp/languages-benchmark"
+  mkdir -p "${results_dir}"
   results_file_name="${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
-  results_file="${benchmark_dir}/${results_file_name}"
+  results_file="${results_dir}/${results_file_name}"
   # Data header, must match what is printed from `run`
   if [ "${check_only}" = false ]; then
     echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
@@ -156,6 +160,30 @@ function run_benchmark {
   echo "Results were written to: ${results_file}"
 }
 
-run_benchmark $(basename "${PWD}")
+available_benchmarks=("loops" "fibonacci" "levenshtein" "hello-world")
+benchmarks_to_run=()
+current_benchmark=$(basename "${PWD}")
+
+benchmark_found=false
+for benchmark in "${available_benchmarks[@]}"; do
+  if [[ "${benchmark}" == "${current_benchmark}" ]]; then
+    benchmark_found=true
+    break
+  fi
+done
+
+if [ "${benchmark_found}" = true ]; then
+  benchmarks_to_run=("${PWD}")
+else
+  for benchmark in "${available_benchmarks[@]}"; do
+    if [ -d "${PWD}/${benchmark}" ]; then
+      benchmarks_to_run+=("${PWD}/${benchmark}")
+    fi
+  done
+fi
+
+for benchmark_dir in "${benchmarks_to_run[@]}"; do
+  run_benchmark "${benchmark_dir}"
+done
 
 
