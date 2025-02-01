@@ -1,14 +1,13 @@
 [package]
-name = "loops"
+name = "benchmark"
 version = "0.1.0"
 edition = "2021"
-default-run = "run"
+
+[lib]
+crate-type = ["rlib"]
+bench = false
 
 [dependencies]
-benchmark = { path = "../../lib/rust" }
-num = "^0.4.3"
-num_convert = "0.7.2"
-rand = "^0.9.0"
 
 [profile.release]
 lto = true

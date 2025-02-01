@@ -5,7 +5,7 @@ rm go/code
 rm -rf jvm/{*.class,*.iprof}
 rm -rf java-native-image/{jvm.run,run,code,jvm.code,*.iprof}
 rm scala/code scala/code-native
-rm -r rust/target
+rm -rf rust/{Cargo.lock,target} ../lib/rust/{Cargo.lock,target}
 rm -rf kotlin/code.jar
 rm kotlin/code.kexe
 rm dart/code
@@ -15,7 +15,7 @@ rm js/bun
 rm common-lisp/code
 rm fpc/code
 rm modula2/code
-rm crystal/code
+rm crystal/{code,run,gc.dll,iconv.dll,*.pdb,*.dll}
 rm ada/code ada/code.ali ada/code.o
 rm d/code
 rm odin/code
