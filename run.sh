@@ -1,7 +1,5 @@
 #!/bin/bash
 
-benchmark=$(basename "${PWD}")
-
 # Defaults
 check_only=false
 skip_check=false
@@ -42,7 +40,6 @@ fi
 
 commit_sha=$(git rev-parse --short HEAD)
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-benchmark_dir="/tmp/languages-benchmark"
 os=${OSTYPE//,/_}
 arch=$(uname -m)
 
@@ -64,20 +61,6 @@ elif [[ "${os}" == "linux-gnu"* ]]; then
 else
   ram="Unknown"
 fi
-
-mkdir -p "${benchmark_dir}"
-results_file_name="${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
-results_file="${benchmark_dir}/${results_file_name}"
-# Data header, must match what is printed from `run`
-if [ "${check_only}" = false ]; then
-  echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
-  echo "Running ${benchmark} benchmark..."
-  echo "Results will be written to: ${results_file}"
-else
-  echo "Only checking ${benchmark} benchmark"
-  echo "No benchmark will be run"
-fi
-
 
 function check {
   local language_name=${1}
@@ -148,20 +131,31 @@ function run {
   fi
 }
 
-# Please keep in language name alphabetic order
-# run "Language name" "File that should exist" "Command line"
-####### BEGIN The languages
-run "Babashka" "bb/run.clj" "bb bb/run.clj"
-run "C" "./c/run" "./c/run"
-run "Clojure" "./clojure/classes/run.class" "java -cp clojure/classes:$(clojure -Spath) run"
-run "Clojure Native" "./clojure-native-image/run" "./clojure-native-image/run"
-run "C++" "./cpp/run" "./cpp/run"
-run "Fortran" "./fortran/run" "./fortran/run"
-run "Java" "./jvm/run.class" "java -cp .:../lib/java jvm.run"
-run "Java Native" "./java-native-image/run" "./java-native-image/run"
-run "Zig" "./zig/zig-out/bin/run" "./zig/zig-out/bin/run"
-####### END The languages
+function run_benchmark {
+  local benchmark=${1}
 
-echo
-echo "Done running $(basename ${PWD}) benchmark"
-echo "Results were written to: ${results_file}"
+  benchmark_dir="/tmp/languages-benchmark"
+  mkdir -p "${benchmark_dir}"
+  results_file_name="${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
+  results_file="${benchmark_dir}/${results_file_name}"
+  # Data header, must match what is printed from `run`
+  if [ "${check_only}" = false ]; then
+    echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
+    echo "Running ${benchmark} benchmark..."
+    echo "Results will be written to: ${results_file}"
+  else
+    echo "Only checking ${benchmark} benchmark"
+    echo "No benchmark will be run"
+  fi
+
+  source ../languages.sh
+  run_languages
+  
+  echo
+  echo "Done running $(basename ${PWD}) benchmark"
+  echo "Results were written to: ${results_file}"
+}
+
+run_benchmark $(basename "${PWD}")
+
+
