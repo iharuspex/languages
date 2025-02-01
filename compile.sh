@@ -46,10 +46,42 @@ function compile {
   fi
 }
 
-echo "Starting compiles for ${benchmark}"
+function compile_benchmark {
+  local benchmark_dir=${1}
+  local benchmark=$(basename ${benchmark_dir})
+  cd "${benchmark_dir}" || return
 
-source ../languages.sh
-compile_languages
+  echo "Starting compiles for ${benchmark}"
 
-echo
-echo "Done with compiles for ${benchmark}"
+  source ../languages.sh
+  compile_languages
+
+  echo
+  echo "Done with compiles for ${benchmark}"
+}
+
+available_benchmarks=("loops" "fibonacci" "levenshtein" "hello-world")
+benchmarks_to_run=()
+current_benchmark=$(basename "${PWD}")
+
+benchmark_found=false
+for benchmark in "${available_benchmarks[@]}"; do
+  if [[ "${benchmark}" == "${current_benchmark}" ]]; then
+    benchmark_found=true
+    break
+  fi
+done
+
+if [ "${benchmark_found}" = true ]; then
+  benchmarks_to_run=("${PWD}")
+else
+  for benchmark in "${available_benchmarks[@]}"; do
+    if [ -d "${PWD}/${benchmark}" ]; then
+      benchmarks_to_run+=("${PWD}/${benchmark}")
+    fi
+  done
+fi
+
+for benchmark_dir in "${benchmarks_to_run[@]}"; do
+  compile_benchmark "${benchmark_dir}"
+done
