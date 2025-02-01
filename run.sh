@@ -116,8 +116,9 @@ function run {
       echo "Benchmarking ${benchmark} ${language_name}"
       if [ ${use_hyperfine} = true ]; then
         local command_line="${partial_command} 1 0 ${cmd_input}"
-        mkdir -p "${benchmark_dir}/hyperfine"
-        hyperfine_file="${benchmark_dir}/hyperfine/${results_file_name}"
+        results_dir="/tmp/languages-benchmark"
+        mkdir -p "${results_dir}/hyperfine"
+        hyperfine_file="${results_dir}/hyperfine/${results_file_name}"
         hyperfine -i --shell=none --output=pipe --runs 25 --warmup 5 --export-csv "${hyperfine_file}" "${command_line}"
         result=$(tail -n +2 "${hyperfine_file}" | awk -F ',' '{print ($2*1000)","($3*1000)","($7*1000)","($8*1000)","25}')
       else
