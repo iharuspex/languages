@@ -15,7 +15,7 @@ We're learning together here.
 
 To run benchmarks you need toolchains to run (and often to compile) the programs for the languages you want to benchmark. The scripts are written so that benchmarks are compiled and run for any language for which you have a working toolchain.
 
-The steps are performed in a per-benchmark fashion by doing `cd` to the benchmark directory and then:
+To run the steps for all benchmarks, from the project root:
 
 1. Compile the programs that need compiling:
 
@@ -34,6 +34,8 @@ The steps are performed in a per-benchmark fashion by doing `cd` to the benchmar
    ```
    $ ./clean.sh
    ```
+
+You can also do it on a per-benchmark fashion by doing `cd` to the benchmark directory you want to run and invoking the scripts from the parent dir (`../compile.sh`,  and so on).
 
 ## The Runner
 
@@ -151,7 +153,7 @@ Please provide output from all benchmark contributions you have added/touched.
 
 When adapting a language implementation of some benchmark, consider these differences
 
-* **fibonacci**: 
+* **fibonacci**:
   * The program should return the result of `fib(n)`. This is to keep the benchmark focused on one thing.
   * Early exit for `n < 2` are now allowed, again to keep the benchmark focused.
   * The input is now `37`, to allow slower languages to complete more runs.
@@ -207,5 +209,5 @@ Several visuals have been published based on the work here.
 - https://benjdd.com/languages
 - https://benjdd.com/languages2
 - https://benjdd.com/languages3
-  
+
 - https://pez.github.io/languages-visualizations/v2025.01.21/
