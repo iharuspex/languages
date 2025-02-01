@@ -104,8 +104,8 @@ function run {
   use_hyperfine=false
   [[ "$benchmark" == "hello-world" ]] && use_hyperfine=true
   cmd_input="$(./check-output.sh -i)"
-  if [ -n "${input_value}" ]; then
-    cmd_input="${input_value}"
+  if [ -n "${override_input_value}" ]; then
+    cmd_input="${override_input_value}"
   fi
 
   local result
@@ -183,6 +183,7 @@ else
 fi
 
 for benchmark_dir in "${benchmarks_to_run[@]}"; do
+  echo
   run_benchmark "${benchmark_dir}"
 done
 
