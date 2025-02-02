@@ -1,7 +1,10 @@
 {
     "rust-analyzer.linkedProjects": [
+        "lib/rust/Cargo.toml",
+        "hello-world/rust/Cargo.toml",
+        "fibonacci/rust/Cargo.toml",
         "levenshtein/rust/Cargo.toml",
-        "levenshtein/rust/code.rs"
+        "loops/rust/Cargo.toml"
     ],
-    "files.trimTrailingWhitespace": false
+    "files.trimTrailingWhitespace": true
 }

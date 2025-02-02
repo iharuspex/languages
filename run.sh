@@ -51,7 +51,7 @@ arch=$(uname -m)
 if [[ "${os}" == "darwin"* || "${os}" == "freebsd"* ]]; then
     model=$(sysctl -n machdep.cpu.brand_string)
 elif [[ "${os}" == "linux-gnu"* ]]; then
-    model=$(lscpu | grep "Model name" | awk -F: '{print $2}' | sed -e 's/^[[:space:]]*//')
+    model=$(lscpu --extended=MODELNAME | awk -F: 'NR==2 {print $1; exit}')
 else
     model="Unknown"
 fi
@@ -159,6 +159,7 @@ run "C++" "./cpp/run" "./cpp/run"
 run "Fortran" "./fortran/run" "./fortran/run"
 run "Java" "./jvm/run.class" "java -cp .:../lib/java jvm.run"
 run "Java Native" "./java-native-image/run" "./java-native-image/run"
+run "Rust" "./rust/target/release/run" "./rust/target/release/run"
 run "Zig" "./zig/zig-out/bin/run" "./zig/zig-out/bin/run"
 ####### END The languages
 
