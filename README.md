@@ -120,8 +120,8 @@ To add (or port) a language for a benchmark to the new runner you'll need to add
 1. Code in `<benchmark>/<language>/run.<language-extension>` (plus whatever extra project files)
    - If you are porting from the legacy runner, copy the corresponding `code.<language-extension>` and start from there. See about [benchmark changes](#changes-to-the-benchmarks-compared-to-legacy-runner) below.
    - To make compare and review of the benched function easier, please split it out in its own module, e.g. [fibonacci/zig/fibonacci.zig](fibonacci/zig/fibonacci.zig). The Zig contributions are currently the best examples to follow here.
-1. An entry in `compile.sh` (copy from `compile-legacy.sh` if you are porting)
-1. An entry in `run.sh` (copy from `compile-legacy.sh` if you are porting)
+1. A compile entry in `languages.sh` (copy from `compile-legacy.sh` if you are porting)
+1. An run entry in `languages.sh` (copy from `run-legacy.sh` if you are porting)
 1. Maybe some code in `clean.sh` (All temporary/build files should be cleaned.)
 1. Maybe some entries in `.gitignore` (All build files, and temporary toolchain files should be added here.)
 
@@ -132,7 +132,7 @@ The `main` function of the program provided should take three arguments:
 1. The input to the function
    - There is only one input argument, unlike before. How this input argument should be interpreted depends on the benchmark. For **levenshtein** it is a file path, to the file containing the words to use for the test.
 
-As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to run warmup runs before the actual benchmark run. E.g. so that a JIT compiler will have had some chance to optimize. It should then pass the warmup time to its benchmark runner. 
+As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to run warmup runs before the actual benchmark run. E.g. so that a JIT compiler will have had some chance to optimize. It should then pass the warmup time to its benchmark runner.
 
 The program should output a csv row with:
 
