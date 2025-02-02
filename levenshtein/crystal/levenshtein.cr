@@ -4,7 +4,7 @@ def levenshtein(strings : Array(String)) : Array(Int32)
 	buf1 = Array(Int32).new(max_len+1, 0)
 	buf2 = Array(Int32).new(max_len+1, 0)
 
-	strings.each_combination(2).map { |pair|
+	strings.each_combination(2, reuse: true).map { |pair|
 		levenshtein_distance(pair[0], pair[1], buf1, buf2)
 	}.to_a
 end
