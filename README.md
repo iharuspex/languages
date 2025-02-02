@@ -15,7 +15,7 @@ We're learning together here.
 
 To run benchmarks you need toolchains to run (and often to compile) the programs for the languages you want to benchmark. The scripts are written so that benchmarks are compiled and run for any language for which you have a working toolchain.
 
-The steps are performed in a per-benchmark fashion by doing `cd` to the benchmark directory and then:
+To run the steps for all benchmarks, from the project root:
 
 1. Compile the programs that need compiling:
 
@@ -34,6 +34,8 @@ The steps are performed in a per-benchmark fashion by doing `cd` to the benchmar
    ```
    $ ./clean.sh
    ```
+
+You can also do it on a per-benchmark fashion by doing `cd` to the benchmark directory you want to run and invoking the scripts from the parent dir (`../compile.sh`,  and so on).
 
 ## The Runner
 
@@ -118,8 +120,8 @@ To add (or port) a language for a benchmark to the new runner you'll need to add
 1. Code in `<benchmark>/<language>/run.<language-extension>` (plus whatever extra project files)
    - If you are porting from the legacy runner, copy the corresponding `code.<language-extension>` and start from there. See about [benchmark changes](#changes-to-the-benchmarks-compared-to-legacy-runner) below.
    - To make compare and review of the benched function easier, please split it out in its own module, e.g. [fibonacci/zig/fibonacci.zig](fibonacci/zig/fibonacci.zig). The Zig contributions are currently the best examples to follow here.
-1. An entry in `compile.sh` (copy from `compile-legacy.sh` if you are porting)
-1. An entry in `run.sh` (copy from `compile-legacy.sh` if you are porting)
+1. A compile entry in `languages.sh` (copy from `compile-legacy.sh` if you are porting)
+1. An run entry in `languages.sh` (copy from `run-legacy.sh` if you are porting)
 1. Maybe some code in `clean.sh` (All temporary/build files should be cleaned.)
 1. Maybe some entries in `.gitignore` (All build files, and temporary toolchain files should be added here.)
 
@@ -130,7 +132,7 @@ The `main` function of the program provided should take three arguments:
 1. The input to the function
    - There is only one input argument, unlike before. How this input argument should be interpreted depends on the benchmark. For **levenshtein** it is a file path, to the file containing the words to use for the test.
 
-As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to run warmup runs before the actual benchmark run. E.g. so that a JIT compiler will have had some chance to optimize. It should then pass the warmup time to its benchmark runner. 
+As noted before the program should run the function-under-benchmark as many times as it can, following the example of the reference implementations mentioned above. The program is allowed to run warmup runs before the actual benchmark run. E.g. so that a JIT compiler will have had some chance to optimize. It should then pass the warmup time to its benchmark runner.
 
 The program should output a csv row with:
 
@@ -151,7 +153,7 @@ Please provide output from all benchmark contributions you have added/touched.
 
 When adapting a language implementation of some benchmark, consider these differences
 
-* **fibonacci**: 
+* **fibonacci**:
   * The program should return the result of `fib(n)`. This is to keep the benchmark focused on one thing.
   * Early exit for `n < 2` are now allowed, again to keep the benchmark focused.
   * The input is now `37`, to allow slower languages to complete more runs.
@@ -207,5 +209,5 @@ Several visuals have been published based on the work here.
 - https://benjdd.com/languages
 - https://benjdd.com/languages2
 - https://benjdd.com/languages3
-  
+
 - https://pez.github.io/languages-visualizations/v2025.01.21/

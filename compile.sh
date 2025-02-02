@@ -46,22 +46,42 @@ function compile {
   fi
 }
 
-echo "Starting compiles for ${benchmark}"
+function compile_benchmark {
+  local benchmark_dir=${1}
+  local benchmark=$(basename ${benchmark_dir})
+  cd "${benchmark_dir}" || return
 
-# Please keep in language name alphabetic order
-# run "Language name" "Directory that should exist" "Command line"
-####### BEGIN The languages
-compile 'C' 'c' 'gcc -O3 -I../lib/c -c ../lib/c/benchmark.c -o c/benchmark.o && gcc -O3 -I../lib/c c/benchmark.o c/*.c -o c/run -lm'
-compile 'Clojure' 'clojure' '(cd clojure && mkdir -p classes && clojure -M -e "(compile (quote run))")'
-compile 'Clojure Native' 'clojure-native-image' "(cd clojure-native-image ; clojure -M:native-image-run --pgo-instrument -march=native) ; ./clojure-native-image/run -XX:ProfilesDumpFile=clojure-native-image/run.iprof 10000 2000 $(./check-output.sh -i) && (cd clojure-native-image ; clojure -M:native-image-run --pgo=run.iprof -march=native)"
-compile 'Crystal' 'crystal' 'crystal build --release --mcpu native crystal/run.cr -o crystal/run'
-compile 'C++' 'cpp' 'g++ -march=native -std=c++23 -O3 -Ofast -I../lib/cpp cpp/run.cpp -o cpp/run'
-compile 'Java' 'jvm' 'javac -cp ../lib/java jvm/*.java'
-compile 'Java Native' 'java-native-image' "(cd java-native-image ; native-image -cp ..:../../lib/java --no-fallback -O3 --pgo-instrument -march=native jvm.run) && ./java-native-image/jvm.run -XX:ProfilesDumpFile=java-native-image/run.iprof 10000 2000 $(./check-output.sh -i) && (cd java-native-image ; native-image -cp ..:../../lib/java -O3 --pgo=run.iprof -march=native jvm.run -o run)"
-compile 'Fortran' 'fortran' "gfortran -O3 -J../lib/fortran ../lib/fortran/benchmark.f90 fortran/*.f90 -o fortran/run"
-compile 'Rust' 'rust' 'cargo build --manifest-path rust/Cargo.toml --release'
-compile 'Zig' 'zig' 'zig build --build-file zig/build.zig --prefix ${PWD}/zig/zig-out --cache-dir ${PWD}/zig/.zig-cache --release=fast'
-####### END The languages
+  echo "Starting compiles for ${benchmark}"
 
-echo
-echo "Done with compiles for ${benchmark}"
+  source ../languages.sh
+  compile_languages
+
+  echo
+  echo "Done with compiles for ${benchmark}"
+}
+
+available_benchmarks=("loops" "fibonacci" "levenshtein" "hello-world")
+benchmarks_to_compile=()
+current_benchmark=$(basename "${PWD}")
+
+benchmark_found=false
+for benchmark in "${available_benchmarks[@]}"; do
+  if [[ "${benchmark}" == "${current_benchmark}" ]]; then
+    benchmark_found=true
+    break
+  fi
+done
+
+if [ "${benchmark_found}" = true ]; then
+  benchmarks_to_compile=("${PWD}")
+else
+  for benchmark in "${available_benchmarks[@]}"; do
+    if [ -d "${PWD}/${benchmark}" ]; then
+      benchmarks_to_compile+=("${PWD}/${benchmark}")
+    fi
+  done
+fi
+
+for benchmark_dir in "${benchmarks_to_compile[@]}"; do
+  compile_benchmark "${benchmark_dir}"
+done
