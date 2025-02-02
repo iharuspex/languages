@@ -23,9 +23,9 @@ shift $((OPTIND-1))
 
 only_langs_slug=""
 if [ -n "${only_langs}" ] && [ "${only_langs}" != "false" ]; then
-    IFS=',' read -r -a only_langs <<< "${only_langs}"
-    only_langs_slug="_only_langs"
+    only_langs_slug="_${only_langs//[^a-zA-Z0-9_-]/-}"
 fi
+IFS=',' read -r -a langs_array <<< "${only_langs}"
 
 is_checked=true
 if [ "$skip_check" = true ]; then
@@ -37,6 +37,7 @@ override_input_value="${1}"
 
 commit_sha=$(git rev-parse --short HEAD)
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+timestamp_slug=$(echo "$timestamp" | tr ':' '-')
 os=${OSTYPE//,/_}
 arch=$(uname -m)
 
@@ -57,6 +58,16 @@ elif [[ "${os}" == "linux-gnu"* ]]; then
   ram=$((ram / 1024 / 1024))GB
 else
   ram="Unknown"
+fi
+
+results_dir="/tmp/languages-benchmark"
+mkdir -p "${results_dir}"
+results_file_name="${timestamp_slug}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
+results_file="${results_dir}/${results_file_name}"
+if [ ! -f "${results_file}" ]; then
+  echo "Results will be written to: ${results_file}"
+  # Data header, must match what is printed from `run`
+  echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
 fi
 
 function check {
@@ -90,7 +101,7 @@ function run {
 
   if [ "$only_langs" != false ]; then
     local should_run=false
-    for lang in "${only_langs[@]}"; do
+    for lang in "${langs_array[@]}"; do
       if [ "$lang" = "$language_name" ]; then
         should_run=true
         break
@@ -116,7 +127,6 @@ function run {
       echo "Benchmarking ${benchmark} ${language_name}"
       if [ ${use_hyperfine} = true ]; then
         local command_line="${partial_command} 1 0 ${cmd_input}"
-        results_dir="/tmp/languages-benchmark"
         mkdir -p "${results_dir}/hyperfine"
         hyperfine_file="${results_dir}/hyperfine/${results_file_name}"
         hyperfine -i --shell=none --output=pipe --runs 25 --warmup 5 --export-csv "${hyperfine_file}" "${command_line}"
@@ -139,15 +149,8 @@ function run_benchmark {
   local benchmark=$(basename ${benchmark_dir})
   cd "${benchmark_dir}" || return
 
-  results_dir="/tmp/languages-benchmark"
-  mkdir -p "${results_dir}"
-  results_file_name="${benchmark}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
-  results_file="${results_dir}/${results_file_name}"
-  # Data header, must match what is printed from `run`
   if [ "${check_only}" = false ]; then
-    echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
     echo "Running ${benchmark} benchmark..."
-    echo "Results will be written to: ${results_file}"
   else
     echo "Only checking ${benchmark} benchmark"
     echo "No benchmark will be run"
@@ -158,11 +161,10 @@ function run_benchmark {
 
   echo
   echo "Done running $(basename ${PWD}) benchmark"
-  echo "Results were written to: ${results_file}"
 }
 
 available_benchmarks=("loops" "fibonacci" "levenshtein" "hello-world")
-benchmarks_to_run=()
+benchmarks_to_run_paths=()
 current_benchmark=$(basename "${PWD}")
 
 benchmark_found=false
@@ -174,19 +176,22 @@ for benchmark in "${available_benchmarks[@]}"; do
 done
 
 if [ "${benchmark_found}" = true ]; then # regular, single, benchmark run
-  benchmarks_to_run=("${PWD}")
+  benchmarks_to_run_paths=("${PWD}")
 else                                     # run all benchmarks
+  benchmarks_to_run=()
   for benchmark in "${available_benchmarks[@]}"; do
     unset override_input_value # Custom input arg doesn't work for this run type
     if [ -d "${PWD}/${benchmark}" ]; then
-      benchmarks_to_run+=("${PWD}/${benchmark}")
+      benchmarks_to_run+=("${benchmark}")
+      benchmarks_to_run_paths+=("${PWD}/${benchmark}")
     fi
   done
+  echo "Running benchmarks: ${benchmarks_to_run[*]}"
 fi
 
-for benchmark_dir in "${benchmarks_to_run[@]}"; do
+for benchmark_dir in "${benchmarks_to_run_paths[@]}"; do
   echo
   run_benchmark "${benchmark_dir}"
 done
 
-
+echo "Results were written to: ${results_file}"
