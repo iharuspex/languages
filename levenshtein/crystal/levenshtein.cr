@@ -21,7 +21,7 @@ def levenshtein_distance(s1 : String, s2 : String, buf1 : Array(Int32), buf2 : A
 	n = s2.size
  
 	# Use two arrays instead of full matrix for space optimization
-	prev_row = buf1.fill(0) {|i| i}
+	prev_row = buf1.fill {|i| i}
 	curr_row = buf2.fill(0)
  
  
