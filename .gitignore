@@ -50,3 +50,5 @@ hello-world/*/run
 .nrepl-port
 
 lib/fortran/benchmark.mod
+
+*/crystal/run.dwarf
