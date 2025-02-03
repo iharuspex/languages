@@ -60,6 +60,11 @@ else
   ram="Unknown"
 fi
 
+gcc_version=$(gcc --version | head -n 1 | tr ',' '_')
+gpp_version=$(g++ --version | head -n 1 | tr ',' '_')
+llvm_version=$(llvm-config --version | tr ',' '_')
+clang_version=$(clang --version | head -n 1 | tr ',' '_')
+
 results_dir="/tmp/languages-benchmark"
 mkdir -p "${results_dir}"
 results_file_name="${timestamp_slug}_${user}_${run_ms}_${commit_sha}${only_langs_slug}.csv"
@@ -67,7 +72,8 @@ results_file="${results_dir}/${results_file_name}"
 if [ ! -f "${results_file}" ]; then
   echo "Results will be written to: ${results_file}"
   # Data header, must match what is printed from `run`
-  echo "benchmark,timestamp,commit_sha,is_checked,user,model,ram,os,arch,language,run_ms,mean_ms,std-dev-ms,min_ms,max_ms,runs" > "${results_file}"
+  echo "benchmark,timestamp,commit-sha,is-checked,user,model,ram,os,arch,gcc,g++,llvm,clang,language,run-ms,mean-ms,std-dev-ms,min-ms,max-ms,runs" > "${results_file}"
+
 fi
 
 function check {
@@ -137,7 +143,7 @@ function run {
         local program_output=$(eval "${command_line}")
         result=$(echo "${program_output}" | awk -F ',' '{print $1","$2","$3","$4","$5}')
       fi
-      echo "${benchmark},${timestamp},${commit_sha},${is_checked},${user},${model},${ram},${os},${arch},${language_name},${run_ms},${result}" | tee -a "${results_file}"
+      echo "${benchmark},${timestamp},${commit_sha},${is_checked},${user},${model},${ram},${os},${arch},${gcc_version},${gpp_version},${llvm_version},${clang_version},${language_name},${run_ms},${result}" | tee -a "${results_file}"
     fi
   else
     echo "No executable or script found for ${language_name}. Skipping."
