@@ -57,7 +57,7 @@ You'll see that the `benchmark/run` function takes two arguments:
 To make the overhead of running and measuring as small as possible, the runner takes a delta time for each time it calls `f`. It is when the sum of these deltas, `total-elapsed-time`, is over the `run-ms` time that we stop calling `f`. So, for a `run-ms` of `1000` the total runtime will always be longer than a second. Because we will almost always “overshoot” with the last run, and because the overhead of running and keeping tally, even if tiny, will always be _something_.
 
 > [!IMPORTANT]
-> The benchmark utility needs to use a monotonic clock for the measurements. The reference implementations use monotonic nano-seconds clocks to be able to measure the run time of quickly executed functions.
+> The benchmark utility needs to use a monotonic clock for the measurements. If the target platforms support it, it should use monotonic nanoseconds to be able to measure the run time of quickly executed functions.
 
 The benchmark/run function is responsible to report back the result/answer to the task being benchmarked, as well as some stats, like mean run time, standard deviation, min and max times, and how many runs where completed.
 
