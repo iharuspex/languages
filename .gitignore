@@ -33,7 +33,6 @@ zig-out
 .scala-build
 */scala/code-native
 */scala/code.js
-levenshtein.mod
 */racket/compiled/
 *.zo
 */clojure-native-image/run
@@ -49,6 +48,6 @@ hello-world/*/code
 hello-world/*/run
 .nrepl-port
 
-lib/fortran/benchmark.mod
-
 */crystal/run.dwarf
+
+*/fortran/*.mod
