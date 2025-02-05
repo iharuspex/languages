@@ -38,6 +38,7 @@ function compile {
   if [ -d ${directory} ]; then
     echo ""
     echo "Compiling ${language_name}"
+    echo "${compile_cmd}"
     eval "${compile_cmd}"
     result=$?
     if [ $result -ne 0 ]; then
