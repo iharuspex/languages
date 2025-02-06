@@ -51,6 +51,9 @@ function clean_benchmark {
   rm -rf clojure-native-image/{classes,code,run,*.iprof}
   rm cobol/main
   rm emacs-lisp/code.eln emacs-lisp/code.elc
+  rm -rf ../lib/py/__pycache__/
+  rm -rf py/__pycache__/
+  rm -rf py-jit/__pycache__/
 }
 
 available_benchmarks=("loops" "fibonacci" "levenshtein" "hello-world")
