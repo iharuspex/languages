@@ -1,7 +1,7 @@
 const std = @import("std");
 
 const benchmark = @import("benchmark");
-const loops = @import("./loop.zig").loops;
+const loops = @import("./loops.zig").loops;
 
 const ITERATIONS: u32 = 10_000;
 

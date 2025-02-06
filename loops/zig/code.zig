@@ -1,7 +1,7 @@
 const std = @import("std");
 const rand = std.crypto.random;
 
-const loops = @import("./loop.zig").loops;
+const loops = @import("./loops.zig").loops;
 
 const LOOPS_OUTER: u32 = 10_000;
 const LOOPS_INNER: u32 = 100_000;
