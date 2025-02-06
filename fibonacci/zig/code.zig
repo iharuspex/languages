@@ -18,7 +18,7 @@ pub fn main() !void {
     const args = args_cli[1..];
 
     // try different integer sizes (u32/u64/u128/usize) to see their impact on performance
-    const runs = try std.fmt.parseInt(usize, args[0], 0);
+    const runs = try std.fmt.parseInt(u32, args[0], 0);
 
     const fn_fib = fibonacci(@TypeOf(runs));
 
