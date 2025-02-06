@@ -17,27 +17,30 @@ pub fn main() !void {
 
     const args = args_cli[1..];
 
-    // Calculate length of longest input string
+    // calculate length of longest input string
     var max_inp_len: usize = 0;
 
     for (args) |argument| {
         max_inp_len = @max(max_inp_len, argument.len);
     }
 
-    // Reuse prev and curr row to minimize allocations
-    const buffer = try allocator.alloc(usize, (max_inp_len + 1) * 2);
+    // reuse prev and curr row to minimize allocations
+    // try different integer sizes (u32/u64/u128/usize) to see their impact on performance
+    const buffer = try allocator.alloc(u32, (max_inp_len + 1) * 2);
 
     var min_distance: usize = std.math.maxInt(usize);
     var times: usize = 0;
 
-    // Compare all pairs of strings
+    const fn_levenshtein = levenshteinDistance(@typeInfo(@TypeOf(buffer)).Pointer.child);
+
+    // compare all pairs of strings
     for (args, 0..args.len) |argA, i| {
         for (args, 0..args.len) |argB, j| {
             if (i == j) {
                 continue;
             }
 
-            const distance = levenshteinDistance(&argA, &argB, &buffer);
+            const distance = fn_levenshtein(&argA, &argB, &buffer);
             min_distance = @min(min_distance, distance);
 
             times += 1;

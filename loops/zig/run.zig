@@ -14,11 +14,13 @@ pub fn main() !void {
     const args = try benchmark.loadArguments(allocator);
 
     // parse program arguments
-    const divisor: u32 = try std.fmt.parseInt(u32, args.program_args[0], 0);
+    // try different integer sizes for numbers N (u32/u64/u128/usize)
+    const divisor = try std.fmt.parseInt(u32, args.program_args[0], 0);
 
     // perform full benchmark
-    const context = benchmark.createContext(loops);
-    const stats = (try context.benchmark(allocator, args.warmup_ms, args.run_ms, .{ ITERATIONS, ITERATIONS, divisor })).?;
+    // try different integer sizes for RNG (u16/u32/u64/u128/usize)
+    const context = benchmark.createContext(loops(u32, @TypeOf(divisor), ITERATIONS, ITERATIONS));
+    const stats = (try context.benchmark(allocator, args.warmup_ms, args.run_ms, .{divisor})).?;
 
     // get last result for success checks
     const last_result = stats.lastResult();

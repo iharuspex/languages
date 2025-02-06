@@ -17,12 +17,15 @@ pub fn main() !void {
 
     const args = args_cli[1..];
 
+    // try different integer sizes (u32/u64/u128/usize) to see their impact on performance
     const runs = try std.fmt.parseInt(usize, args[0], 0);
 
-    var sum: usize = 0;
+    const fn_fib = fibonacci(@TypeOf(runs));
 
-    for (0..runs) |i| {
-        sum += fibonacci(i);
+    var sum: @TypeOf(runs) = 0;
+
+    for (0..@intCast(runs)) |i| {
+        sum += fn_fib(@intCast(i));
     }
 
     const stdout = std.io.getStdOut().writer();
