@@ -3,10 +3,17 @@ use std::error::Error;
 use benchmark::{BenchmarkArguments, BenchmarkContext};
 use levenshtein::*;
 
-fn calculate_distances<T: CostInteger>(
-    word_list: &[impl AsRef<str>],
-    buffer: &mut Vec<T>,
-) -> Vec<T> {
+fn calculate_distances<T: CostInteger>(word_list: &[String]) -> Result<Vec<T>, &'static str> {
+    // calculate length of longest input string
+    let max_inp_len: usize = word_list
+        .iter()
+        .map(|word| word.len())
+        .max()
+        .ok_or("empty word list")?;
+
+    // reuse buffer for prev_row and curr_row to minimize allocations
+    let mut buffer: Vec<T> = vec![T::zero(); (max_inp_len + 1) * 2];
+
     let list_length = word_list.len();
     let mut results = Vec::with_capacity((list_length * (list_length - 1)) / 2);
 
@@ -16,12 +23,12 @@ fn calculate_distances<T: CostInteger>(
         let (_, cmp_words) = word_list.split_at(i + 1);
 
         for word_b in cmp_words.iter() {
-            let distance = levenshtein_distance(word_a, word_b, buffer);
+            let distance = levenshtein_distance(word_a, word_b, &mut buffer);
             results.push(distance);
         }
     }
 
-    results
+    Ok(results)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -43,27 +50,22 @@ fn main() -> Result<(), Box<dyn Error>> {
         std::process::exit(3);
     }
 
-    // calculate length of longest input string
-    let max_inp_len: usize = word_list
-        .iter()
-        .map(|word| word.len())
-        .max()
-        .ok_or("empty word list")?;
-
-    // reuse buffer for prev_row and curr_row to minimize allocations
-    // try different integer sizes (u32/u64/usize) to see their impact on performance
-    let mut buffer: Vec<u32> = vec![0; (max_inp_len + 1) * 2];
-
     // perform full benchmark
-    let mut context = BenchmarkContext::new(move || calculate_distances(&word_list, &mut buffer));
+    // try different integer sizes (u32/u64/usize) to see their impact on performance
+    let mut context = BenchmarkContext::new(move || calculate_distances::<u32>(&word_list));
     let stats = context
         .benchmark(args.run_ms, args.warmup_ms)
         .ok_or("no benchmark result")?;
 
     // get last result for success checks
-    let last_result = stats.last_result().ok_or("empty result list")?;
+    let last_result = stats
+        .last_result()
+        .ok_or("empty result list")?
+        .as_ref()
+        .map_err(|&msg| msg)?;
 
-    // sum the distances outside the benchmarked function
+    // sum the list of distances outside the benchmarked function
+    // (fold can infer the typy automatically, sum needs explicit type annotations)
     #[allow(clippy::unnecessary_fold)]
     let sum = last_result.iter().fold(0, |acc, n| acc + n);
 
