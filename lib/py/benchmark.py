@@ -2,8 +2,10 @@ import time
 import sys
 
 def variance(array):
+    if len(array) < 2:
+        return 0.0
     mean = sum(array) / len(array)
-    return sum((x - mean) ** 2 for x in array)
+    return sum((x - mean) ** 2 for x in array) / (len(array) - 1)
 
 def std_dev(array):
     return variance(array) ** 0.5
@@ -13,7 +15,6 @@ def bench(run_ms, func):
     result = None
     run_ns = run_ms * 1_000_000
 
-    start_time = time.monotonic_ns()
     while sum(times) < run_ns:
         start = time.monotonic_ns()
         result = func()
