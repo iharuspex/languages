@@ -34,7 +34,8 @@
              [init-t (current-nanotime)]
              [last-status-t init-t])
         (when (> run-ms 1)
-          (display ".") (flush-output))
+          (display "." (current-error-port))
+          (flush-output (current-error-port)))
         (define (loop last-tet results last-status-t)
           (let* ([t0 (current-nanotime)]
                  [result (f)]
@@ -45,7 +46,8 @@
                  [print-status? (and (> run-ms 1)
                                      (> (- t0 last-status-t) 1000000000))])
             (when print-status?
-              (display ".") (flush-output))
+              (display "." (current-error-port))
+              (flush-output (current-error-port)))
             (if (< total-elapsed-time run-ns)
                 (loop total-elapsed-time
                       (cons timed-result results)
@@ -71,7 +73,7 @@
                [max-ms (/ max-ns 1000000.0)]
                [std-dev-ms (/ std-dev-ns 1000000.0)])
           (when (> run-ms 1)
-            (newline))
+            (newline (current-error-port)))
           (hash 'runs runs
                 'result result
                 'mean-ms mean-ms
