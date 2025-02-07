@@ -6,6 +6,8 @@
 ;; A helper to get a (rough) nanosecond reading.
 ;; (Note: Racket doesn’t have a built-in monotonic nanoTime,
 ;; so we use current-inexact-milliseconds multiplied up.)
+;; We get away with it until there is a benchmark that Racket
+;; completes in sub-milliseconds time.
 (define (current-nanotime)
   (inexact->exact (round (* (current-inexact-milliseconds) 1000000))))
 

@@ -1,5 +1,5 @@
 #lang racket
-(require "benchmark.rkt"
+(require (file "../../lib/racket/benchmark.rkt")
          "levenshtein.rkt"
          racket/cmdline
          racket/file)
