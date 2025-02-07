@@ -7,16 +7,6 @@ const levenshteinDistance = @import("./levenshtein.zig").levenshteinDistance;
 pub fn calculateDistances(comptime T: type) (fn (allocator: Allocator, word_list: *const std.ArrayList([]const u8)) Allocator.Error!std.ArrayList(T)) {
     return struct {
         fn calc(allocator: Allocator, word_list: *const std.ArrayList([]const u8)) Allocator.Error!std.ArrayList(T) {
-            // calculate length of longest input string
-            var max_inp_len: usize = 0;
-
-            for (word_list.items) |word| {
-                max_inp_len = @max(max_inp_len, word.len);
-            }
-
-            // reuse buffer for prev_row and curr_row to minimize allocations
-            const buffer = try allocator.alloc(T, (max_inp_len + 1) * 2);
-
             const fn_levenshtein = levenshteinDistance(T);
 
             var results = try std.ArrayList(T).initCapacity(allocator, (word_list.items.len * (word_list.items.len - 1)) / 2);
@@ -28,7 +18,7 @@ pub fn calculateDistances(comptime T: type) (fn (allocator: Allocator, word_list
                 const cmp_words = word_list.items[(i + 1)..];
 
                 for (cmp_words, 0..cmp_words.len) |wordB, _| {
-                    const distance = fn_levenshtein(&wordA, &wordB, &buffer);
+                    const distance = fn_levenshtein(allocator, &wordA, &wordB);
                     try results.append(distance);
                 }
             }

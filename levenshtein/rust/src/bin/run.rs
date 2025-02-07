@@ -4,16 +4,6 @@ use benchmark::{BenchmarkArguments, BenchmarkContext};
 use levenshtein::*;
 
 fn calculate_distances<T: CostInteger>(word_list: &[String]) -> Result<Vec<T>, &'static str> {
-    // calculate length of longest input string
-    let max_inp_len: usize = word_list
-        .iter()
-        .map(|word| word.len())
-        .max()
-        .ok_or("empty word list")?;
-
-    // reuse buffer for prev_row and curr_row to minimize allocations
-    let mut buffer: Vec<T> = vec![T::zero(); (max_inp_len + 1) * 2];
-
     let list_length = word_list.len();
     let mut results = Vec::with_capacity((list_length * (list_length - 1)) / 2);
 
@@ -23,7 +13,7 @@ fn calculate_distances<T: CostInteger>(word_list: &[String]) -> Result<Vec<T>, &
         let (_, cmp_words) = word_list.split_at(i + 1);
 
         for word_b in cmp_words.iter() {
-            let distance = levenshtein_distance(word_a, word_b, &mut buffer);
+            let distance = levenshtein_distance(word_a, word_b);
             results.push(distance);
         }
     }

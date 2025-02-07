@@ -1,12 +1,13 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 /// Calculates the Levenshtein distance between two strings using Wagner-Fischer algorithm.
 ///
 /// Space Complexity: O(min(m,n)) - only uses two arrays instead of full matrix
 /// Time Complexity: O(m*n) - where m and n are the lengths of the input strings
-pub fn levenshteinDistance(comptime T: type) (fn (s1: *const []const u8, s2: *const []const u8, buffer: *const []T) T) {
+pub fn levenshteinDistance(comptime T: type) (fn (allocator: Allocator, s1: *const []const u8, s2: *const []const u8) T) {
     return struct {
-        pub fn levenshtein(s1: *const []const u8, s2: *const []const u8, buffer: *const []T) T {
+        pub fn levenshtein(allocator: Allocator, s1: *const []const u8, s2: *const []const u8) T {
             // early termination checks
             if (s1.*.len == 0) return @intCast(s2.*.len);
             if (s2.*.len == 0) return @intCast(s1.*.len);
@@ -23,8 +24,13 @@ pub fn levenshteinDistance(comptime T: type) (fn (s1: *const []const u8, s2: *co
             const m = str1.len;
             const n = str2.len;
 
-            var prev_row: []T = buffer.*[0..(m + 1)];
-            var curr_row: []T = buffer.*[(m + 1)..];
+            const row_elements = m + 1;
+
+            // use two rows instead of full matrix for space optimization
+            var prev_row: []T = allocator.alloc(T, row_elements) catch unreachable;
+            var curr_row: []T = allocator.alloc(T, row_elements) catch unreachable;
+            defer allocator.free(prev_row);
+            defer allocator.free(curr_row);
 
             // initialize first row
             for (0..m + 1) |i| {
