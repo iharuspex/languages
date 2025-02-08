@@ -12,10 +12,11 @@ pub fn main() !void {
     const args = try benchmark.loadArguments(allocator);
 
     // parse program arguments
-    const number: usize = try std.fmt.parseInt(usize, args.program_args[0], 0);
+    // try different integer sizes (u32/u64/u128/usize) to see their impact on performance
+    const number = try std.fmt.parseInt(usize, args.program_args[0], 0);
 
     // perform full benchmark
-    const context = benchmark.createContext(fibonacci);
+    const context = benchmark.createContext(fibonacci(@TypeOf(number)));
     const stats = (try context.benchmark(allocator, args.warmup_ms, args.run_ms, .{number})).?;
 
     // get last result for success checks

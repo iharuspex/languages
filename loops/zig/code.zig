@@ -1,7 +1,7 @@
 const std = @import("std");
 const rand = std.crypto.random;
 
-const loops = @import("./loop.zig").loops;
+const loops = @import("./loops.zig").loops;
 
 const LOOPS_OUTER: u32 = 10_000;
 const LOOPS_INNER: u32 = 100_000;
@@ -21,9 +21,13 @@ pub fn main() !void {
 
     const args = args_cli[1..];
 
+    // try different integer sizes for numbers N (u32/u64/u128/usize)
     const divisor = try std.fmt.parseInt(u32, args[0], 0);
 
-    const result = loops(LOOPS_OUTER, LOOPS_INNER, divisor);
+    // try different integer sizes for RNG (u16/u32/u64/u128/usize)
+    const fn_loops = loops(u32, @TypeOf(divisor), LOOPS_OUTER, LOOPS_INNER);
+
+    const result = fn_loops(divisor);
 
     const stdout = std.io.getStdOut().writer();
     try stdout.print("{d}\n", .{result}); // Print out a single element from the array

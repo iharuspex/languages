@@ -17,11 +17,7 @@ impl<T: Unsigned + Integer + Copy + UpperBounded + FromPrimitive + ToPrimitive +
 ///
 /// Space Complexity: O(min(m,n)) - only uses two rows instead of full matrix
 /// Time Complexity: O(m*n) - where m and n are the lengths of the input strings
-pub fn levenshtein_distance<T: CostInteger>(
-    s1: &impl AsRef<str>,
-    s2: &impl AsRef<str>,
-    buffer: &mut Vec<T>,
-) -> T {
+pub fn levenshtein_distance<T: CostInteger>(s1: &impl AsRef<str>, s2: &impl AsRef<str>) -> T {
     let s1: &str = s1.as_ref();
     let s2: &str = s2.as_ref();
 
@@ -39,19 +35,12 @@ pub fn levenshtein_distance<T: CostInteger>(
     let m = s1.len();
 
     let row_elements = m + 1;
-    let req_size = row_elements * 2;
-
-    if buffer.len() < req_size {
-        buffer.extend((buffer.len()..req_size).map(|_| T::zero()));
-    }
 
     // use two rows instead of full matrix for space optimization
-    let (mut prev_row, mut curr_row) = buffer[0..req_size].split_at_mut(row_elements);
-
-    // Initialize the previous row
-    for (i, v) in prev_row.iter_mut().enumerate() {
-        *v = T::from_usize(i).expect("init number");
-    }
+    let mut prev_row: Vec<T> = (0..row_elements)
+        .map(|i| T::from_usize(i).expect("init value"))
+        .collect();
+    let mut curr_row: Vec<T> = vec![T::zero(); row_elements];
 
     // main computation loop
     for (j, ch2) in s2.iter().enumerate() {
