@@ -85,7 +85,7 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
     count++;
   }
 
-  // If this is a check-output run we haven't printed any status dots, 
+  // If this is a check-output run we haven't printed any status dots,
   // so no newline should be printed either
   if (run_ms > 1) fprintf(stderr, "\n");
 
@@ -113,7 +113,8 @@ benchmark_stats_t benchmark_run(benchmark_fn fn, void* data, int run_ms) {
 
 void benchmark_format_results(benchmark_stats_t stats, char* buffer,
                               size_t size) {
-  snprintf(buffer, size, "%.6f,%.6f,%.6f,%.6f,%d,%ld", stats.mean_ms,
-           stats.std_dev_ms, stats.min_ms, stats.max_ms, stats.runs,
-           stats.last_result.value.number);
+ snprintf(buffer, size, "%.6f,%.6f,%.6f,%.6f,%d,%lld",
+  stats.mean_ms, stats.std_dev_ms, stats.min_ms, stats.max_ms, stats.runs,
+  stats.last_result.value.number);
 }
+

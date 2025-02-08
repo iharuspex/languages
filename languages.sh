@@ -13,6 +13,7 @@ function compile_languages {
   compile 'Java' 'jvm' 'javac -cp ../lib/java jvm/*.java'
   compile 'Java Native' 'java-native-image' '(cd java-native-image ; native-image -cp ..:../../lib/java --no-fallback -O3 --pgo-instrument -march=native jvm.run) && ./java-native-image/jvm.run -XX:ProfilesDumpFile=java-native-image/run.iprof 10000 2000 $(./check-output.sh -i) && (cd java-native-image ; native-image -cp ..:../../lib/java -O3 --pgo=run.iprof -march=native jvm.run -o run)'
   compile 'Fortran' 'fortran' 'gfortran -O3 -J../lib/fortran ../lib/fortran/benchmark.f90 fortran/*.f90 -o fortran/run'
+  compile 'Objective C' 'objc' 'clang -O3 -I../lib/c -framework Foundation objc/*.m ../lib/c/benchmark.c -o objc/run'
   compile 'Racket' 'racket' '(cd racket && raco make run.rkt && raco demod -o run.zo run.rkt && raco exe -o run run.zo)'
   compile 'Rust' 'rust' 'cargo build --manifest-path rust/Cargo.toml --release'
   compile 'Zig' 'zig' 'zig build --build-file zig/build.zig --prefix ${PWD}/zig/zig-out --cache-dir ${PWD}/zig/.zig-cache --release=fast'
@@ -29,6 +30,7 @@ function run_languages {
   run 'Fortran' './fortran/run' './fortran/run'
   run 'Java' './jvm/run.class' 'java -cp .:../lib/java jvm.run'
   run 'Java Native' './java-native-image/run' './java-native-image/run'
+  run 'Objective C' './objc/run' './objc/run'
   run "Python" "./py/run.py" "python3.12 ./py/run.py"
   run "Python JIT" "./py-jit/run.py" "python3.12 ./py-jit/run.py"
   run "Racket" './racket/run' './racket/run'
