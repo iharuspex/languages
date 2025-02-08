@@ -16,6 +16,7 @@ function compile_languages {
   compile 'Objective C' 'objc' 'clang -O3 -I../lib/c -framework Foundation objc/*.m ../lib/c/benchmark.c -o objc/run'
   compile 'Racket' 'racket' '(cd racket && raco make run.rkt && raco demod -o run.zo run.rkt && raco exe -o run run.zo)'
   compile 'Rust' 'rust' 'cargo build --manifest-path rust/Cargo.toml --release'
+  compile 'Swift' 'swift' 'swiftc -O -parse-as-library -Xcc -funroll-loops -Xcc -march=native -Xcc -ftree-vectorize -Xcc -ffast-math swift/*.swift ../lib/swift/benchmark.swift -o swift/run'
   compile 'Zig' 'zig' 'zig build --build-file zig/build.zig --prefix ${PWD}/zig/zig-out --cache-dir ${PWD}/zig/.zig-cache --release=fast'
 }
 
@@ -37,5 +38,6 @@ function run_languages {
   run 'Ruby' 'ruby/run.rb' 'ruby ruby/run.rb'
   run "Ruby YJIT" "./ruby/code.rb" "ruby --yjit ./ruby/run.rb"
   run "Rust" "./rust/target/release/run" "./rust/target/release/run"
+  run "Swift" "./swift/run" "./swift/run"
   run 'Zig' './zig/zig-out/bin/run' './zig/zig-out/bin/run'
 }
