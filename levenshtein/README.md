@@ -6,9 +6,18 @@ This program aims to benchmark implementations of a function for [levenshtein di
 - Always use the shorter string for column dimension to minimize space usage
 - Reuse arrays instead of creating new ones
 
-The function should not use pre-allocated memory.
+The benchmark involves two functions:
 
-The function will be tested on collection of different length strings (with mostly random geneerated content). To satisfy the correctness test, programs should implement and benchmark a function that takes a sequence of strings as input and returns a sequence of all distances between any pairing of the words. The program should then, outside the measured time, sum these distances and report the sum. The words are provided from a file given as the `input` argument to the program. There is one word per line in the file.
+1. The **distance** function, this is the one we are interested in benchmarking (where Wagner-Fisher is applied)
+   * It should take two strings as its arguments, return the distance
+   * It should not use pre-allocated memory
+3. The **distances** function, used to run the **distance** function with some variation of string lengths and content (mostly random gibberish)
+   * It should take a list of strings as its argument and return a list distances of all pairings of the strings
+   * To minimize the impact of it on the benchmark, this function should be made as efficient as possible, pulling from the toolbox of the language implementing it 
+    
+The strings (words) are provided from a file given as the `input` argument to the program. There is one word per line in the file.
+
+The progtram should benchmark/measure the **distances** function using the words provided, and then, outside the measured time, sum these distances and report the sum as the result. 
 
 The code should follow the reference implementations as closely as possible:
 
