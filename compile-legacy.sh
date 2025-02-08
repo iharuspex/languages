@@ -37,7 +37,7 @@ compile 'scala' 'scala-cli --power package --js scala/codeJS.scala -f -o scala/c
 compile 'scala' 'bun build --bytecode --compile scala/code.js --outfile scala/bun'
 compile 'ldc2' 'ldc2 -O3 -release -boundscheck=off -mcpu=native flto=thin d/code.d'
 compile 'odin' 'odin build odin/code.odin -o:speed -file -out:odin/code'
-compile 'objc' 'clang -O3 -framework Foundation objc/code.m -o objc/code'
+compile 'objc/legacy' 'clang -O3 -framework Foundation objc/legacy/code.m -o objc/code'
 compile 'fortran' 'gfortran -O3 fortran/legacy/code.f90 -o fortran/code'
 compile 'zig' 'zig build-exe -O ReleaseFast -femit-bin=zig/code zig/code.zig'
 compile 'lua' 'luajit -b lua/code.lua lua/code'
