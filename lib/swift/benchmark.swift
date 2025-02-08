@@ -23,6 +23,16 @@ public func benchmarkRun<T>(runMs: Int, f: () -> T) -> BenchmarkResult<T> {
     var totalElapsed: UInt64 = 0
     var lastResult = f()
     let runNs = UInt64(runMs) * 1_000_000
+
+    var lastStatusT = DispatchTime.now().uptimeNanoseconds
+    if runMs > 1 {
+        // Print initial status dot
+        if let data = ".".data(using: .utf8) {
+            FileHandle.standardError.write(data)
+        }
+        fflush(stderr)
+    }
+
     while totalElapsed < runNs {
         let t0 = DispatchTime.now().uptimeNanoseconds
         lastResult = f()
@@ -30,7 +40,22 @@ public func benchmarkRun<T>(runMs: Int, f: () -> T) -> BenchmarkResult<T> {
         let elapsed = t1 - t0
         totalElapsed += elapsed
         elapsedTimes.append(Double(elapsed) / 1_000_000.0)
+        if runMs > 1, t0 - lastStatusT > 1_000_000_000 {
+            lastStatusT = t1
+            if let data = ".".data(using: .utf8) {
+                FileHandle.standardError.write(data)
+            }
+            fflush(stderr)
+        }
     }
+    if runMs > 1 {
+        // Print newline after status dots
+        if let data = "\n".data(using: .utf8) {
+            FileHandle.standardError.write(data)
+        }
+        fflush(stderr)
+    }
+
     let runs = elapsedTimes.count
     let mean = elapsedTimes.reduce(0, +) / Double(runs)
     let variance = elapsedTimes.map { pow($0 - mean, 2) }.reduce(0, +) / Double(runs)
