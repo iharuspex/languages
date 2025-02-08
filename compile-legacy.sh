@@ -41,7 +41,7 @@ compile 'objc/legacy' 'clang -O3 -framework Foundation objc/legacy/code.m -o obj
 compile 'fortran' 'gfortran -O3 fortran/legacy/code.f90 -o fortran/code'
 compile 'zig' 'zig build-exe -O ReleaseFast -femit-bin=zig/code zig/code.zig'
 compile 'lua' 'luajit -b lua/code.lua lua/code'
-compile 'swift' 'swiftc -O -parse-as-library -Xcc -funroll-loops -Xcc -march=native -Xcc -ftree-vectorize -Xcc -ffast-math swift/code.swift -o swift/code'
+compile 'swift' 'swiftc -O -parse-as-library -Xcc -funroll-loops -Xcc -march=native -Xcc -ftree-vectorize -Xcc -ffast-math swift/legacy/code.swift -o swift/code'
 compile 'csharp' 'dotnet publish csharp -o csharp/code'
 compile 'csharp' 'dotnet publish csharp -o csharp/code-aot /p:PublishAot=true /p:OptimizationPreference=Speed /p:IlcInstructionSet=native'
 compile 'fsharp' 'dotnet publish fsharp -o fsharp/code'
