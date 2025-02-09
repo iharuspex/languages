@@ -1,6 +1,6 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const nanoTimestamp = std.time.nanoTimestamp;
+const Timer = std.time.Timer;
 
 const INITIAL_CAPACITY: usize = 1_000;
 
@@ -16,8 +16,8 @@ pub fn FnReturnType(comptime function: anytype) type {
 
 pub fn TimedResult(comptime T: type) type {
     return struct {
-        elapsed_total: i128,
-        elapsed: i128,
+        elapsed_total: u64,
+        elapsed: u64,
         value: T,
     };
 }
@@ -87,18 +87,20 @@ pub fn createContext(comptime benchmark_fn: anytype) type {
 
             const run_ns: usize = run_ms * 1_000_000;
 
-            var elapsed_total: i128 = 0;
-            var last_time: i128 = nanoTimestamp();
+            var elapsed_total: u64 = 0;
+
+            var timer = try Timer.start();
+            var last_time = timer.read();
 
             while (elapsed_total < run_ns) {
-                const time_start = nanoTimestamp();
+                const time_start = timer.read();
 
                 const current_value = @call(.auto, benchmark_fn, args);
 
-                const time_end = nanoTimestamp();
+                const time_end = timer.read();
 
                 // print status dots every second if it isn't a check-output run
-                if (run_ms > 1 and time_start - last_time > 1_000_000_000) {
+                if (run_ms > 1 and (time_start - last_time) > 1_000_000_000) {
                     last_time = time_end;
                     try stderr.writeAll(".");
                 }
@@ -149,9 +151,7 @@ pub fn createContext(comptime benchmark_fn: anytype) type {
             for (results.items) |result| {
                 const milliseconds: f64 = @as(f64, @floatFromInt(result.elapsed)) / 1_000_000.0;
 
-                if (milliseconds < min_ms) {
-                    min_ms = milliseconds;
-                }
+                min_ms = @min(min_ms, milliseconds);
             }
 
             return min_ms;
@@ -163,9 +163,7 @@ pub fn createContext(comptime benchmark_fn: anytype) type {
             for (results.items) |result| {
                 const milliseconds: f64 = @as(f64, @floatFromInt(result.elapsed)) / 1_000_000.0;
 
-                if (milliseconds > max_ms) {
-                    max_ms = milliseconds;
-                }
+                max_ms = @max(max_ms, milliseconds);
             }
 
             return max_ms;
