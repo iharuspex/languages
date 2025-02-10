@@ -4,8 +4,10 @@
 using InteractiveUtils
 
 include("fibonacci.jl")
+include("fibonacci-no-val.jl")
 include("../../lib/julia/benchmark.jl")
 using .Fibonacci
+using .FibonacciNoVal
 using .Benchmark
 
 function main()
@@ -17,9 +19,15 @@ function main()
     n = parse(Int, ARGS[1])
 
     # Warmup run
-    Benchmark.run(() -> Fibonacci.fibonacci(n), 1000)
+    Benchmark.run(() -> Fibonacci.fibonacci(n), 100)
+    Benchmark.run(() -> FibonacciNoVal.fibonacci(n), 100)
 
+    println("Val version: ASM")
     @code_native Fibonacci.fibonacci(Val(n))
+
+    println("\n-----\n")
+    println("NoVal version: ASM")
+    @code_native FibonacciNoVal.fibonacci(n)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
