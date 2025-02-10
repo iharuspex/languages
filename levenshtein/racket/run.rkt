@@ -13,6 +13,7 @@
   ;; Run a warmup (no status output if warmup-ms = 1)
   (run (λ () (levenshtein-distances words)) warmup-ms)
   ;; Run the benchmark and format the results.
-  (define results (run (λ () (levenshtein-distances words)) run-ms))
-  (define total-distance (apply + (hash-ref results 'result)))
-  (printf "~a\n" (format-results (hash-set results 'result total-distance))))
+  (define the-results (run (λ () (levenshtein-distances words)) run-ms))
+  (define total-distance (for/sum ([distance (in-list (results-result the-results))])
+                           distance))
+  (printf "~a\n" (format-results (struct-copy results the-results [result total-distance]))))

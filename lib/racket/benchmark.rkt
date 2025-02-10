@@ -1,12 +1,16 @@
 #lang racket
 
-(provide run format-results)
+(provide run format-results
+         (struct-out results))
 
 ;; Results across processes are not comparable!
 (define (current-monotonic-nanotime)
   (inexact->exact (round (* (current-inexact-monotonic-milliseconds) 1000000))))
 
-;; run : (-> any) number -> hash
+;; runs: number of runs
+(struct results [runs result mean-ms min-ms max-ms std-dev-ms])
+
+;; run : (-> any) number -> results
 ;;
 ;; f is the function to run repeatedly.
 ;; run-ms is the total run time in milliseconds.
@@ -14,18 +18,10 @@
 ;; Special cases:
 ;;   * run-ms = 0 => don’t run, just return a “dummy” result.
 ;;   * run-ms = 1 => don’t print status dots (assumed to be a correctness check).
-;;
-;; Returns a hash with keys:
-;;   'runs, 'result, 'mean-ms, 'min-ms, 'max-ms, 'std-dev-ms
 (define (run f run-ms)
   (cond
     [(zero? run-ms)
-     (hash 'runs 0
-           'result (f)
-           'mean-ms 0
-           'min-ms 0
-           'max-ms 0
-           'std-dev-ms 0)]
+     (results 0 (f) 0 0 0 0)]
     [else
      ; convert run-ms (milliseconds) to nanoseconds
      (define run-ns (* run-ms 1000000))
@@ -74,21 +70,18 @@
      (define std-dev-ms (/ std-dev-ns 1000000.0))
      (when (> run-ms 1)
        (newline (current-error-port)))
-     (hash 'runs runs
-           'result result
-           'mean-ms mean-ms
-           'min-ms min-ms
-           'max-ms max-ms
-           'std-dev-ms std-dev-ms)]))
+     (results runs result mean-ms min-ms max-ms std-dev-ms)]))
 
-;; format-results : hash -> string
+;; format-results : results -> string
 ;; Formats the benchmark results as:
 ;;   mean-ms,std-dev-ms,min-ms,max-ms,runs,result
 (define (format-results stats)
-  (format "~a,~a,~a,~a,~a,~a"
-          (hash-ref stats 'mean-ms)
-          (hash-ref stats 'std-dev-ms)
-          (hash-ref stats 'min-ms)
-          (hash-ref stats 'max-ms)
-          (hash-ref stats 'runs)
-          (hash-ref stats 'result)))
+  (match stats
+    [(results runs result mean-ms min-ms max-ms std-dev-ms)
+     (format "~a,~a,~a,~a,~a,~a"
+             mean-ms
+             std-dev-ms
+             min-ms
+             max-ms
+             runs
+             result)]))
