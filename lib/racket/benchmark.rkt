@@ -30,16 +30,17 @@
      (when (> run-ms 1)
        (display "." (current-error-port))
        (flush-output (current-error-port)))
-     (define final-results
+     (define-values (total-elapsed-time result runs elapsed-times)
        (let loop ([last-tet 0]
-                  [results '()]
+                  [elapsed-times '()]
+                  ;; better to track this than walk the elapsed-times list for length
+                  [runs 0]
                   [last-status-t last-status-t])
          (define t0 (current-monotonic-nanotime))
          (define result (f))
          (define t1 (current-monotonic-nanotime))
          (define elapsed-time (- t1 t0))
          (define total-elapsed-time (+ last-tet elapsed-time))
-         (define timed-result (list total-elapsed-time elapsed-time result))
          (define print-status? (and (> run-ms 1)
                                     (> (- t0 last-status-t) 1000000000)))
          (when print-status?
@@ -47,15 +48,13 @@
            (flush-output (current-error-port)))
          (if (< total-elapsed-time run-ns)
              (loop total-elapsed-time
-                   (cons timed-result results)
+                   (cons elapsed-time elapsed-times)
+                   (add1 runs)
                    (if print-status? t1 last-status-t))
-             (reverse (cons timed-result results)))))
-     ;; Get the final timed result (i.e. from the last run)
-     (define last-run (last final-results))
-     (define total-elapsed-time (first last-run))
-     (define result (third last-run))
-     (define elapsed-times (map second final-results))
-     (define runs (length final-results))
+             (values total-elapsed-time
+                     result
+                     (add1 runs)
+                     (reverse (cons elapsed-time elapsed-times))))))
      (define mean-ns (/ total-elapsed-time runs))
      (define min-ns (argmin values elapsed-times))
      (define max-ns (argmax values elapsed-times))
