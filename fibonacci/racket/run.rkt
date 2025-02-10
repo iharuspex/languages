@@ -1,17 +1,16 @@
 #lang racket
-(require (file "../../lib/racket/benchmark.rkt")
-         "fibonacci.rkt"
-         racket/cmdline
-         racket/file)
+
+(require "../../lib/racket/benchmark.rkt"
+         "fibonacci.rkt")
 
 (command-line
-  #:args args
-  (define run-ms (string->number (list-ref args 0)))
-  (define warmup-ms (string->number (list-ref args 1)))
-  (define n (string->number (list-ref args 2)))
+ #:args (run-ms-str warmup-ms-str n-str)
+ (define run-ms (string->number run-ms-str))
+ (define warmup-ms (string->number warmup-ms-str))
+ (define n (string->number n-str))
 
-  ;; Run a warmup (no status output if warmup-ms = 1)
-  (run (λ () (fibonacci n)) warmup-ms)
-  ;; Run the benchmark and format the results.
-  (define results (run (λ () (fibonacci n)) run-ms))
-  (printf "~a\n" (format-results results)))
+ ;; Run a warmup (no status output if warmup-ms = 1)
+ (run (λ () (fibonacci n)) warmup-ms)
+ ;; Run the benchmark and format the results.
+ (define results (run (λ () (fibonacci n)) run-ms))
+ (displayln (format-results results)))

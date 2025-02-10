@@ -1,17 +1,16 @@
 #lang racket
-(require (file "../../lib/racket/benchmark.rkt")
-         "loops.rkt"
-         racket/cmdline
-         racket/file)
+
+(require "../../lib/racket/benchmark.rkt"
+         "loops.rkt")
 
 (command-line
-  #:args args
-  (define run-ms (string->number (list-ref args 0)))
-  (define warmup-ms (string->number (list-ref args 1)))
-  (define u (string->number (list-ref args 2)))
+ #:args (run-ms-str warmup-ms-str u-str)
+ (define run-ms (string->number run-ms-str))
+ (define warmup-ms (string->number warmup-ms-str))
+ (define u (string->number u-str))
 
-  ;; Run a warmup (no status output if warmup-ms = 1)
-  (run (λ () (loops u)) warmup-ms)
-  ;; Run the benchmark and format the results.
-  (define results (run (λ () (loops u)) run-ms))
-  (printf "~a\n" (format-results results)))
+ ;; Run a warmup (no status output if warmup-ms = 1)
+ (run (λ () (loops u)) warmup-ms)
+ ;; Run the benchmark and format the results.
+ (define results (run (λ () (loops u)) run-ms))
+ (displayln (format-results results)))
