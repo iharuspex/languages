@@ -1,5 +1,4 @@
 #lang racket
-(require racket/hash)
 
 (provide run format-results)
 
