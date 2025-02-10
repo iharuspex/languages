@@ -3,13 +3,9 @@
 
 (provide run format-results)
 
-;; A helper to get a (rough) nanosecond reading.
-;; (Note: Racket doesn’t have a built-in monotonic nanoTime,
-;; so we use current-inexact-milliseconds multiplied up.)
-;; We get away with it until there is a benchmark that Racket
-;; completes in sub-milliseconds time.
-(define (current-nanotime)
-  (inexact->exact (round (* (current-inexact-milliseconds) 1000000))))
+;; Results across processes are not comparable!
+(define (current-monotonic-nanotime)
+  (inexact->exact (round (* (current-inexact-monotonic-milliseconds) 1000000))))
 
 ;; run : (-> any) number -> hash
 ;;
@@ -31,15 +27,15 @@
             'max-ms 0
             'std-dev-ms 0)
       (let* ([run-ns (* run-ms 1000000)] ; convert run-ms (milliseconds) to nanoseconds
-             [init-t (current-nanotime)]
+             [init-t (current-monotonic-nanotime)]
              [last-status-t init-t])
         (when (> run-ms 1)
           (display "." (current-error-port))
           (flush-output (current-error-port)))
         (define (loop last-tet results last-status-t)
-          (let* ([t0 (current-nanotime)]
+          (let* ([t0 (current-monotonic-nanotime)]
                  [result (f)]
-                 [t1 (current-nanotime)]
+                 [t1 (current-monotonic-nanotime)]
                  [elapsed-time (- t1 t0)]
                  [total-elapsed-time (+ last-tet elapsed-time)]
                  [timed-result (list total-elapsed-time elapsed-time result)]
