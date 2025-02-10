@@ -31,13 +31,14 @@ function run_languages {
   run 'Fortran' './fortran/run' './fortran/run'
   run 'Java' './jvm/run.class' 'java -cp .:../lib/java jvm.run'
   run 'Java Native' './java-native-image/run' './java-native-image/run'
+  run 'Julia' './julia/run.jl' 'julia ./julia/run.jl'
   run 'Objective C' './objc/run' './objc/run'
-  run "Python" "./py/run.py" "python3.12 ./py/run.py"
-  run "Python JIT" "./py-jit/run.py" "python3.12 ./py-jit/run.py"
-  run "Racket" './racket/run' './racket/run'
+  run 'Python' './py/run.py' 'python3.12 ./py/run.py'
+  run 'Python JIT' './py-jit/run.py' 'python3.12 ./py-jit/run.py'
+  run 'Racket' './racket/run' './racket/run'
   run 'Ruby' 'ruby/run.rb' 'ruby ruby/run.rb'
-  run "Ruby YJIT" "./ruby/code.rb" "ruby --yjit ./ruby/run.rb"
-  run "Rust" "./rust/target/release/run" "./rust/target/release/run"
-  run "Swift" "./swift/run" "./swift/run"
+  run 'Ruby YJIT' './ruby/code.rb' 'ruby --yjit ./ruby/run.rb'
+  run 'Rust' './rust/target/release/run' './rust/target/release/run'
+  run 'Swift' './swift/run' './swift/run'
   run 'Zig' './zig/zig-out/bin/run' './zig/zig-out/bin/run'
 }
