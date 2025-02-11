@@ -54,3 +54,8 @@ hello-world/*/run
 
 */py/__pycache__/
 */py-jit/__pycache__/
+
+*/mealg/*.beam
+*/mealg/*.ez
+*/mealg/build
+*/mealg/erl_crash.dump
