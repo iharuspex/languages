@@ -30,7 +30,7 @@ function run_languages {
   run "Crystal" "./crystal/run" "./crystal/run"
   run 'C++' './cpp/run' './cpp/run'
   run 'Fortran' './fortran/run' './fortran/run'
-  run 'Gleam' './maelg/build/erlang/run' ''./maelg/build/erlang/run''
+  run 'Gleam' './maelg/build/dev/erlang/run/ebin/run.beam' 'erl -pa ./maelg/build/dev/erlang/*/ebin -noshell -eval run:main() -s erlang halt -extra'
   run 'Java' './jvm/run.class' 'java -cp .:../lib/java jvm.run'
   run 'Java Native' './java-native-image/run' './java-native-image/run'
   run 'Julia' './julia/run.jl' 'julia ./julia/run.jl'
