@@ -58,4 +58,4 @@ hello-world/*/run
 */mealg/*.beam
 */mealg/*.ez
 */mealg/build
-*/mealg/erl_crash.dump
+erl_crash.dump
