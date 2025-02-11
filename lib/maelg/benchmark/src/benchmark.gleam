@@ -20,6 +20,8 @@ pub type BenchmarkResult(a) {
   BenchmarkResult(run_count: Int, times: List(Int), last_result: a)
 }
 
+// TODO: Figure out how to use a monotonic clock
+
 pub fn run(f: fn() -> Int, run_ms: Int) -> BenchmarkResult(Int) {
   case run_ms {
     0 -> {
@@ -59,7 +61,6 @@ fn run_loop(
       let result = f()
       let t1 = erlang.system_time(erlang.Nanosecond)
       let delta = t1 - t0
-      // Print status dot every second
       case t0 - last_status > 1_000_000_000 {
         True -> {
           io.print_error(".")
@@ -71,7 +72,6 @@ fn run_loop(
     }
     False -> {
       io.println_error("")
-      // Final newline
       BenchmarkResult(list.length(times), times, last)
     }
   }
@@ -86,7 +86,6 @@ fn calculate_stats(result: BenchmarkResult(Int)) -> Stats {
       let total = list.fold(times, 0, fn(sum, x) { sum + x })
       let mean_ns = int.to_float(total) /. int.to_float(runs)
       let min_ns = int.to_float(list.fold(times, total, int.min))
-      // Changed initial value
       let max_ns = int.to_float(list.fold(times, 0, int.max))
 
       let variance =
