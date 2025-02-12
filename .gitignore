@@ -59,3 +59,4 @@ hello-world/*/run
 */mealg/*.ez
 */mealg/build
 erl_crash.dump
+manifest.toml
