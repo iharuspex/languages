@@ -17,7 +17,7 @@ pub fn main() -> Int {
 
       // Benchmark run
       let result = benchmark.run(fn() { fibonacci.fibonacci(n) }, run_ms)
-      io.println(benchmark.format_results(result))
+      io.println(benchmark.format_results(result, result.result))
       0
     }
 

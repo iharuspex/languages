@@ -5,79 +5,18 @@ import gleam/io
 import gleam/list
 import gleam/string
 
-pub type Stats {
+pub type Stats(a) {
   Stats(
     mean_ms: Float,
     std_dev_ms: Float,
     min_ms: Float,
     max_ms: Float,
     runs: Int,
-    result: Int,
+    result: a,
   )
 }
 
-pub type BenchmarkResult(a) {
-  BenchmarkResult(run_count: Int, times: List(Int), last_result: a)
-}
-
-// TODO: Figure out how to use a monotonic clock
-
-pub fn run(f: fn() -> Int, run_ms: Int) -> BenchmarkResult(Int) {
-  case run_ms {
-    0 -> {
-      let result = f()
-      BenchmarkResult(1, [0], result)
-    }
-    1 -> {
-      // Check-output run, no status prints
-      let t0 = erlang.system_time(erlang.Nanosecond)
-      let result = f()
-      let t1 = erlang.system_time(erlang.Nanosecond)
-      BenchmarkResult(1, [t1 - t0], result)
-    }
-    _ -> {
-      io.print_error(".")
-      let run_ns = run_ms * 1_000_000
-      let start = erlang.system_time(erlang.Nanosecond)
-      let last_status = start
-      run_loop(f, run_ns, [], start, last_status, f())
-    }
-  }
-}
-
-fn run_loop(
-  f: fn() -> Int,
-  run_ns: Int,
-  times: List(Int),
-  start: Int,
-  last_status: Int,
-  last: Int,
-) -> BenchmarkResult(Int) {
-  let now = erlang.system_time(erlang.Nanosecond)
-  let elapsed = now - start
-  case elapsed < run_ns {
-    True -> {
-      let t0 = erlang.system_time(erlang.Nanosecond)
-      let result = f()
-      let t1 = erlang.system_time(erlang.Nanosecond)
-      let delta = t1 - t0
-      case t0 - last_status > 1_000_000_000 {
-        True -> {
-          io.print_error(".")
-          run_loop(f, run_ns, [delta, ..times], start, t1, result)
-        }
-        False ->
-          run_loop(f, run_ns, [delta, ..times], start, last_status, result)
-      }
-    }
-    False -> {
-      io.println_error("")
-      BenchmarkResult(list.length(times), times, last)
-    }
-  }
-}
-
-fn calculate_stats(result: BenchmarkResult(Int)) -> Stats {
+fn calculate_stats(result: BenchmarkResult(a)) -> Stats(a) {
   let runs = result.run_count
   case runs {
     0 -> Stats(0.0, 0.0, 0.0, 0.0, 0, result.last_result)
@@ -112,8 +51,67 @@ fn calculate_stats(result: BenchmarkResult(Int)) -> Stats {
   }
 }
 
-pub fn format_results(result: BenchmarkResult(Int)) -> String {
-  let stats = calculate_stats(result)
+pub type BenchmarkResult(a) {
+  BenchmarkResult(run_count: Int, times: List(Int), last_result: a)
+}
+
+fn run_loop(
+  f: fn() -> a,
+  run_ns: Int,
+  times: List(Int),
+  start: Int,
+  last_status: Int,
+  last: a,
+) -> BenchmarkResult(a) {
+  let now = erlang.system_time(erlang.Nanosecond)
+  let elapsed = now - start
+  case elapsed < run_ns {
+    True -> {
+      let t0 = erlang.system_time(erlang.Nanosecond)
+      let result = f()
+      let t1 = erlang.system_time(erlang.Nanosecond)
+      let delta = t1 - t0
+      case t0 - last_status > 1_000_000_000 {
+        True -> {
+          io.print_error(".")
+          run_loop(f, run_ns, [delta, ..times], start, t1, result)
+        }
+        False ->
+          run_loop(f, run_ns, [delta, ..times], start, last_status, result)
+      }
+    }
+    False -> {
+      io.println_error("")
+      BenchmarkResult(list.length(times), times, last)
+    }
+  }
+}
+
+pub fn run(f: fn() -> a, run_ms: Int) -> Stats(a) {
+  let benchmark_result = case run_ms {
+    0 -> {
+      let result = f()
+      BenchmarkResult(1, [0], result)
+    }
+    1 -> {
+      // Check-output run, no status prints
+      let t0 = erlang.system_time(erlang.Nanosecond)
+      let result = f()
+      let t1 = erlang.system_time(erlang.Nanosecond)
+      BenchmarkResult(1, [t1 - t0], result)
+    }
+    _ -> {
+      io.print_error(".")
+      let run_ns = run_ms * 1_000_000
+      let start = erlang.system_time(erlang.Nanosecond)
+      let last_status = start
+      run_loop(f, run_ns, [], start, last_status, f())
+    }
+  }
+  calculate_stats(benchmark_result)
+}
+
+pub fn format_results(stats: Stats(a), answer: Int) -> String {
   string.concat([
     float.to_string(stats.mean_ms),
     ",",
@@ -125,6 +123,6 @@ pub fn format_results(result: BenchmarkResult(Int)) -> String {
     ",",
     int.to_string(stats.runs),
     ",",
-    int.to_string(stats.result),
+    int.to_string(answer),
   ])
 }
