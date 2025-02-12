@@ -3,6 +3,8 @@ import gleam/list
 import gleam/result
 import gleam/string
 
+// TODO: This is WAAAAYYYY to slow and will finish in some years time for the default input file
+
 fn get_or(lst: List(Int), idx: Int) -> Int {
   lst
   |> list.drop(idx)

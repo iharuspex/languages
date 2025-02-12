@@ -11,10 +11,11 @@ import simplifile
 pub fn main() -> Int {
   let args = argv.load().arguments
 
-  // {
-  //   io.println("TODO: This Levenshtein is too slow, not running it")
-  //   0 |> panic()
-  // }
+  {
+    io.println("TODO: This Levenshtein is too slow, not running it")
+    // TODO: I couldn't figure out how to just exit with a value
+    0 |> panic()
+  }
 
   case args {
     [run_ms_str, warmup_ms_str, input_path] -> {
