@@ -54,3 +54,9 @@ hello-world/*/run
 
 */py/__pycache__/
 */py-jit/__pycache__/
+
+*/mealg/*.beam
+*/mealg/*.ez
+*/mealg/build
+erl_crash.dump
+manifest.toml

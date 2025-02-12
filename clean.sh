@@ -54,6 +54,8 @@ function clean_benchmark {
   rm -rf ../lib/py/__pycache__/
   rm -rf py/__pycache__/
   rm -rf py-jit/__pycache__/
+  (cd ../lib/maelg/benchmark; gleam clean)
+  (cd maelg; gleam clean)
 }
 
 available_benchmarks=("loops" "fibonacci" "levenshtein" "hello-world")
